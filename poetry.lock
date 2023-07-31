@@ -11,6 +11,9 @@ files = [
     {file = "annotated_types-0.5.0.tar.gz", hash = "sha256:47cdc3490d9ac1506ce92c7aaa76c579dc3509ff11e098fc867e5130ab7be802"},
 ]
 
+[package.dependencies]
+typing-extensions = {version = ">=4.0.0", markers = "python_version < \"3.9\""}
+
 [[package]]
 name = "cfgv"
 version = "3.3.1"
@@ -444,5 +447,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.10"
-content-hash = "ef6f9e122cc2d5cf47ef891daa0e5bb58b0ed87b50cc4381b6b5470d488a1865"
+python-versions = ">=3.8, <4.0"
+content-hash = "8308d9446cf4567a550d712a3a8dae8c8e4757de41e290229204da88be8326b7"
