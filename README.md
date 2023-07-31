@@ -1,3 +1,5 @@
+[![Tests](https://github.com/papermerge/salinic/actions/workflows/tests.yml/badge.svg)](https://github.com/papermerge/salinic/actions/workflows/tests.yml)
+
 # Salinic
 
 Salinic - provides modular search. It features a unified, familiar API that
