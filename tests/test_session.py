@@ -1,6 +1,4 @@
-from salinic.session import Session
-from salinic.schema import Schema
-from salinic.field import IdField, TextField
+from salinic import IdField, Schema, Session, TextField
 
 
 class SimpleIndex(Schema):

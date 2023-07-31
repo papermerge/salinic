@@ -1,5 +1,4 @@
-from salinic.schema import Schema
-from salinic.field import IdField, TextField
+from salinic import IdField, Schema, TextField
 
 
 class SimpleIndex(Schema):

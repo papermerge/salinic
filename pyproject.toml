@@ -14,6 +14,10 @@ xapianpy = "^1.4.22.post2305071405"
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.0"
 
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.3.3"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -1,5 +1,4 @@
-from pydantic import BaseModel, model_serializer
-from pydantic import ConfigDict
+from pydantic import BaseModel, ConfigDict, model_serializer
 
 from .field import Field
 

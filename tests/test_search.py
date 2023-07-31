@@ -1,7 +1,4 @@
-from salinic.session import Session
-from salinic.schema import Schema
-from salinic.search import Search
-from salinic.field import IdField, TextField
+from salinic import IdField, Schema, Search, Session, TextField
 
 
 class SimpleIndex(Schema):
@@ -19,6 +16,7 @@ def test_simple_search(session: Session):
     results = session.exec(sq1)
 
     assert len(results) == 1
+    assert isinstance(results[0], SimpleIndex)
     assert results[0].title == 'My Document.pdf'
 
     sq2 = Search(SimpleIndex).query('Bills')
