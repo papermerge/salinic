@@ -12,9 +12,7 @@ class Engine:
             self._db_path,
             xapian.DB_CREATE_OR_OPEN
         )
-        # self._termgen = xapian.TermGenerator()
-        # self._termgen.set_stemmer(xapian.Stem('en'))
 
 
-def create_engine(dsn: str):
+def create_engine(dsn: str) -> Engine:
     return Engine(dsn)

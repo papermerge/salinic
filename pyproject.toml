@@ -6,8 +6,9 @@ authors = ["Eugen Ciur <eugen@papermerge.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 pydantic = "^2.1.1"
+xapianpy = "^1.4.22.post2305071405"
 
 
 [tool.poetry.group.test.dependencies]
