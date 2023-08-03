@@ -5,16 +5,7 @@ from pydantic import BaseModel
 
 from .field import Field, IdField, KeywordField, TextField
 from .search import SearchQuery
-
-
-def first(iterable, condition=None):
-    try:
-        if condition:
-            return next(item for item in iterable if condition(item))
-
-        return next(item for item in iterable)
-    except StopIteration:
-        return None
+from .utils import first
 
 
 class Session:
