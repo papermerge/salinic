@@ -42,11 +42,11 @@ class Session:
                 # index field without prefix for general search
                 self._termgenerator.index_text(insert_value)
                 self._termgenerator.increase_termpos()
-            elif isinstance(field.default, KeywordField):
+            elif isinstance(field_instance, KeywordField):
                 doc.add_boolean_term(
                     name.upper() + insert_value.lower()
                 )
-            elif isinstance(field.default, IdField):
+            elif isinstance(field_instance, IdField):
                 id_as_term = insert_value.replace('-', '')
                 doc.add_boolean_term(
                     name.upper() + id_as_term
