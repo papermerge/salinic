@@ -139,3 +139,16 @@ def test_fields_without_annotation_wont_be_indexed(session: Session):
 
     assert len(results_4) == 1
     assert results_4[0].title == 'My Document.pdf'
+
+
+class IndexWithIntPrimaryKey(Schema):
+    unique_id: Annotated[int, IdField(primary_key=True)]
+    text: Annotated[str, TextField()]
+
+
+def test_int_primary_key(session: Session):
+    doc = IndexWithIntPrimaryKey(unique_id=1, text='ho ho ho!')
+    session.add(doc)
+    sq = Search(IndexWithIntPrimaryKey).query('ho ho')
+
+    assert len(session.exec(sq)) == 1

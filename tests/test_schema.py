@@ -44,6 +44,8 @@ def test_index_should_feature_primary_key():
 
 
 def test_pk_property():
+    """Primary key field i.e. doc.pk is the field which
+    was defined with IdField(primary_key=True) annotation"""
     doc = Index(id='one', text='some text')
     assert doc.pk == 'one'
 
