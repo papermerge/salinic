@@ -1,11 +1,20 @@
 import json
-import typing
 
 import xapian
 from pydantic import BaseModel
 
 from .field import Field, IdField, KeywordField, TextField
 from .search import SearchQuery
+
+
+def first(iterable, condition=None):
+    try:
+        if condition:
+            return next(item for item in iterable if condition(item))
+
+        return next(item for item in iterable)
+    except StopIteration:
+        return None
 
 
 class Session:
@@ -24,42 +33,44 @@ class Session:
         primary_key_name = None
 
         for name, field in entity.model_fields.items():
-            if field.annotation in (str, typing.Optional[str]):
-                value = getattr(entity, name)
-                if isinstance(value, Field):
-                    insert_value = value.default
-                else:
-                    insert_value = value
-                if not insert_value:
-                    continue
+            field_instance = first(field.metadata)
+            value = getattr(entity, name)
+            if isinstance(value, Field):
+                insert_value = value.default
+            else:
+                insert_value = value
+            if not insert_value:
+                continue
 
-                if isinstance(field.default, TextField):
-                    self._termgenerator.index_text(
-                        insert_value,
-                        1,
-                        name.upper()  # the prefix
-                    )
-                    # index field without prefix for general search
-                    self._termgenerator.index_text(insert_value)
-                    self._termgenerator.increase_termpos()
-                elif isinstance(field.default, KeywordField):
-                    doc.add_boolean_term(
-                        name.upper() + insert_value.lower()
-                    )
-                elif isinstance(field.default, IdField):
-                    id_as_term = insert_value.replace('-', '')
-                    doc.add_boolean_term(
-                        name.upper() + id_as_term
-                    )
-                    self._termgenerator.index_text(
-                        id_as_term,
-                        1,
-                        name.upper()  # the prefix
-                    )
-                    self._termgenerator.index_text(id_as_term)
-                    self._termgenerator.increase_termpos()
+            if isinstance(field_instance, TextField):
+                self._termgenerator.index_text(
+                    insert_value,
+                    1,
+                    name.upper()  # the prefix
+                )
+                # index field without prefix for general search
+                self._termgenerator.index_text(insert_value)
+                self._termgenerator.increase_termpos()
+            elif isinstance(field.default, KeywordField):
+                doc.add_boolean_term(
+                    name.upper() + insert_value.lower()
+                )
+            elif isinstance(field.default, IdField):
+                id_as_term = insert_value.replace('-', '')
+                doc.add_boolean_term(
+                    name.upper() + id_as_term
+                )
+                self._termgenerator.index_text(
+                    id_as_term,
+                    1,
+                    name.upper()  # the prefix
+                )
+                self._termgenerator.index_text(id_as_term)
+                self._termgenerator.increase_termpos()
 
-            if isinstance(field.default, Field) and field.default.primary_key:
+            id_field = first(field.metadata, lambda x: type(x) is IdField)
+
+            if id_field and id_field.primary_key:
                 primary_key_name = name
 
         doc.set_data(

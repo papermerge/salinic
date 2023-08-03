@@ -13,18 +13,19 @@ Currently it supports only Xapian backend.
 Declare your search schema:
 
     from typing import Optional
+    from typing_extensions import Annotated
 
     from salinic.field import IdField, KeywordField, TextField
     from salinic.schema import Schema
 
 
     class IndexEntity(Schema):
-        id: str = IdField(primary_key=True)
+        id: Annotated[str, IdField(primary_key=True)]
         user_id: str
         parent_id: str
-        title: str = TextField()
-        text: Optional[str] = TextField()
-        tags: list[str] | None = KeywordField()
+        title: Annotated[str, TextField()]
+        text: Annotated[Optional[str], TextField(default=None)]
+        tags: Annotated[Optional[list[str]], KeywordField(default=None)]
 
 
 Index your documents:

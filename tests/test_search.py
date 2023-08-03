@@ -1,10 +1,12 @@
+from typing_extensions import Annotated
+
 from salinic import IdField, Schema, Search, Session, TextField
 
 
 class SimpleIndex(Schema):
-    id: str = IdField(primary_key=True)
-    title: str = TextField()
-    text: str = TextField()
+    id: Annotated[str, IdField(primary_key=True)]
+    title: Annotated[str, TextField()]
+    text: Annotated[str, TextField()]
 
 
 def test_simple_search(session: Session):
