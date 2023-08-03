@@ -28,6 +28,56 @@ def test_simple_search(session: Session):
     assert len(results) == 0
 
 
+def test_adding_document_multiple_times(session: Session):
+    """When adding same document multiple times - search results are
+    not affected; in other words if same document (i.e. with same ID)
+    is added multiple times to the index - it will be inserted in the index only
+    once - thus search result will reveal only single instance
+    of the document"""
+    doc = SimpleIndex(id='one', title='My Document.pdf', text='some text')
+
+    # add same document multiple times
+    session.add(doc)
+    session.add(doc)
+    session.add(doc)
+    session.add(doc)
+
+    sq1 = Search(SimpleIndex).query('document')
+
+    results = session.exec(sq1)
+
+    # adding same document multiple times does not affect search results
+    # i.e. there only one search result, even though document was
+    # added 4 times
+    assert len(results) == 1
+    assert isinstance(results[0], SimpleIndex)
+    assert results[0].title == 'My Document.pdf'
+
+
+def test_remove_document_from_index(session: Session):
+    doc = SimpleIndex(id='one', title='My Document.pdf', text='some text')
+    session.add(doc)
+
+    # (1)
+    sq1 = Search(SimpleIndex).query('document')
+
+    results = session.exec(sq1)
+
+    # confirm that document is part of the index
+    assert len(results) == 1
+
+    # remove document from the index
+    session.remove(doc)
+
+    # perform same query as in (1)
+    sq2 = Search(SimpleIndex).query('document')
+
+    results_2 = session.exec(sq2)
+
+    # this time no results as the document was removed from the index
+    assert len(results_2) == 0
+
+
 class IndexHasFieldsWithoutAnnotation(Schema):
     """This index features fields which are not annotated
 

@@ -73,8 +73,15 @@ class Session:
 
         identifier = getattr(entity, primary_key_name)
         idterm = f"Q{identifier}"
+        doc.add_boolean_term(idterm)
 
         self._engine._db.replace_document(idterm, doc)
+        self._engine._db.commit()
+
+    def remove(self, entity: BaseModel):
+        idterm = f"Q{entity.pk}"
+        self._engine._db.delete_document(idterm)
+        self._engine._db.commit()
 
     def exec(self, sq: SearchQuery):
         results = []
