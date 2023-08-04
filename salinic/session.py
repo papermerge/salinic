@@ -1,11 +1,54 @@
 import json
-import typing
 
 import xapian
 from pydantic import BaseModel
 
 from .field import Field, IdField, KeywordField, TextField
 from .search import SearchQuery
+from .utils import first
+
+
+def index_text_field(
+    term_generator: xapian.TermGenerator,
+    insert_value: str,
+    prefix: str,
+    weight: int = 1
+):
+    term_generator.index_text(
+        insert_value,
+        weight,
+        prefix  # the prefix
+    )
+
+    # index field without prefix for general search
+    term_generator.index_text(insert_value)
+    term_generator.increase_termpos()
+
+
+def index_id_field(
+    term_generator: xapian.TermGenerator,
+    insert_value: str,
+    prefix: str,
+    weight: int = 1
+):
+    doc = term_generator.get_document()
+    id_as_term = insert_value.replace('-', '')
+    doc.add_boolean_term(prefix + id_as_term)
+
+    term_generator.index_text(id_as_term, weight, prefix)
+    term_generator.index_text(id_as_term)
+    term_generator.increase_termpos()
+
+
+def index_keyword_field(
+    term_generator: xapian.TermGenerator,
+    insert_value: str,
+    prefix: str
+):
+    doc = term_generator.get_document()
+    doc.add_boolean_term(
+        prefix + insert_value.lower()
+    )
 
 
 class Session:
@@ -24,42 +67,31 @@ class Session:
         primary_key_name = None
 
         for name, field in entity.model_fields.items():
-            if field.annotation in (str, typing.Optional[str]):
-                value = getattr(entity, name)
-                if isinstance(value, Field):
-                    insert_value = value.default
-                else:
-                    insert_value = value
-                if not insert_value:
-                    continue
+            field_instance = first(field.metadata)
+            value = getattr(entity, name)
+            if isinstance(value, Field):
+                insert_value = value.default
+            else:
+                insert_value = value
+            if not insert_value:
+                continue
+            prefix = name.upper()
 
-                if isinstance(field.default, TextField):
-                    self._termgenerator.index_text(
-                        insert_value,
-                        1,
-                        name.upper()  # the prefix
-                    )
-                    # index field without prefix for general search
-                    self._termgenerator.index_text(insert_value)
-                    self._termgenerator.increase_termpos()
-                elif isinstance(field.default, KeywordField):
-                    doc.add_boolean_term(
-                        name.upper() + insert_value.lower()
-                    )
-                elif isinstance(field.default, IdField):
-                    id_as_term = insert_value.replace('-', '')
-                    doc.add_boolean_term(
-                        name.upper() + id_as_term
-                    )
-                    self._termgenerator.index_text(
-                        id_as_term,
-                        1,
-                        name.upper()  # the prefix
-                    )
-                    self._termgenerator.index_text(id_as_term)
-                    self._termgenerator.increase_termpos()
+            if isinstance(field_instance, TextField):
+                index_text_field(self._termgenerator, insert_value, prefix)
+            elif isinstance(field_instance, KeywordField):
+                index_keyword_field(
+                    self._termgenerator,
+                    insert_value,
+                    prefix
+                )
+            elif isinstance(field_instance, IdField):
+                if isinstance(insert_value, str):
+                    index_id_field(self._termgenerator, insert_value, prefix)
 
-            if isinstance(field.default, Field) and field.default.primary_key:
+            id_field = first(field.metadata, lambda x: type(x) is IdField)
+
+            if id_field and id_field.primary_key:
                 primary_key_name = name
 
         doc.set_data(
@@ -71,8 +103,15 @@ class Session:
 
         identifier = getattr(entity, primary_key_name)
         idterm = f"Q{identifier}"
+        doc.add_boolean_term(idterm)
 
         self._engine._db.replace_document(idterm, doc)
+        self._engine._db.commit()
+
+    def remove(self, entity: BaseModel):
+        idterm = f"Q{entity.pk}"
+        self._engine._db.delete_document(idterm)
+        self._engine._db.commit()
 
     def exec(self, sq: SearchQuery):
         results = []
