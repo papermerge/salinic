@@ -2,10 +2,9 @@
 
 # Salinic
 
-Salinic - provides modular search. It features a unified, familiar API that
+Salinic - provides modular search. It features a unified API that
 allows you to plug in different search backends.
-Currently it supports only Xapian backend.
-
+Currently, it supports only Xapian backend.
 
 
 ## Usage
