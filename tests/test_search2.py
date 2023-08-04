@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from typing_extensions import Annotated
 
@@ -28,7 +28,7 @@ class Index(Schema):
     page_count: types.OptionalNumeric = None  # None in case of folder entity
 
 
-def test_basic_index_add(session: Session):
+def test_basic_index_add_and_search(session: Session):
 
     folder_entity = Index(
         id='one',
@@ -56,4 +56,11 @@ def test_basic_index_add(session: Session):
     session.add(page_entity)
 
     sq = Search(Index).query('page of')
-    assert len(session.exec(sq)) == 1
+    found: List[Index] = session.exec(sq)
+    assert found[0].entity_type == 'page'
+    assert found[0].title == 'My Document.pdf'
+
+    sq = Search(Index).query('bill')
+    found: List[Index] = session.exec(sq)
+    assert found[0].entity_type == 'folder'
+    assert found[0].title == 'Bills'
