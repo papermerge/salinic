@@ -1,14 +1,12 @@
-
 import pytest
-from typing_extensions import Annotated
 
-from salinic import IdField, Schema, Session, TextField
+from salinic import Schema, Session, types
 
 
 class SimpleIndex(Schema):
-    id: Annotated[str, IdField(primary_key=True)]
-    title: Annotated[str, TextField()]
-    text: Annotated[str, TextField()]
+    id: types.IdStrPrimary
+    title: types.Text
+    text: types.Text
 
 
 def test_add_simple_index_instance_to_session(session: Session):
@@ -21,9 +19,9 @@ def test_add_simple_index_instance_to_session(session: Session):
 
 
 class IndexWithoutPrimaryKey(Schema):
-    id: Annotated[str, IdField()]
-    title: Annotated[str, TextField()]
-    text: Annotated[str, TextField()]
+    id: types.IdStr
+    title: types.Text
+    text: types.Text
 
 
 def test_insert_into_index_entity_without_primary_key(session: Session):

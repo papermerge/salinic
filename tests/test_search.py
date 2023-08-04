@@ -1,12 +1,10 @@
-from typing_extensions import Annotated
-
-from salinic import IdField, Schema, Search, Session, TextField
+from salinic import Schema, Search, Session, types
 
 
 class SimpleIndex(Schema):
-    id: Annotated[str, IdField(primary_key=True)]
-    title: Annotated[str, TextField()]
-    text: Annotated[str, TextField()]
+    id: types.IdStrPrimary
+    title: types.Text
+    text: types.Text
 
 
 def test_simple_search(session: Session):
@@ -84,10 +82,10 @@ class IndexHasFieldsWithoutAnnotation(Schema):
     Fields which are not annotated won't be indexed, thus you
     cannot search by those fields.
     """
-    id: Annotated[str, IdField(primary_key=True)]
-    title: Annotated[str, TextField()]
-    text: Annotated[str, TextField()]
-    document_id: Annotated[str, IdField()]
+    id: types.IdStrPrimary
+    title: types.Text
+    text: types.Text
+    document_id: types.IdStr
     # fields without annotation won't be indexed
     # however, they will be stored in the index
     user_id: str
@@ -142,8 +140,8 @@ def test_fields_without_annotation_wont_be_indexed(session: Session):
 
 
 class IndexWithIntPrimaryKey(Schema):
-    unique_id: Annotated[int, IdField(primary_key=True)]
-    text: Annotated[str, TextField()]
+    unique_id: types.IdPrimary
+    text: types.Text
 
 
 def test_int_primary_key(session: Session):
