@@ -18,13 +18,13 @@ Declare your search schema:
     from salinic.schema import Schema
 
 
-    class IndexEntity(Schema):
+    class Index(Schema):
         id: Annotated[str, IdField(primary_key=True)]
         user_id: str
         parent_id: str
         title: Annotated[str, TextField()]
-        text: Annotated[Optional[str], TextField(default=None)]
-        tags: Annotated[Optional[list[str]], KeywordField(default=None)]
+        text: Annotated[Optional[str], TextField()] = None
+        tags: Annotated[Optional[list[str]], KeywordField()] = []
 
 
 Index your documents:
@@ -35,7 +35,7 @@ Index your documents:
         session = Session(engine)
 
         for document in all_your_documents():
-            entity = IndexEntity(
+            entity = Index(
                 id=str(document.id),
                 user_id=str(document.user_id),
                 parent_id=document.parent_id,
@@ -53,7 +53,7 @@ Search your documents:
         engine = create_engine("xapian:////search_index")
         session = Session(engine)
 
-        sq = Search(IndexEntity).query(" your query string ")
+        sq = Search(Index).query(" your query string ")
 
         for found in session.exec(sq):
             print(found)  # found is instance of IndexEntity

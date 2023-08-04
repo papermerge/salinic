@@ -1,18 +1,17 @@
 import pytest
-from typing_extensions import Annotated
 
-from salinic import IdField, Schema, TextField
+from salinic import Schema, types
 
 
 class SimpleIndexWithoutPrimaryKey(Schema):
-    id: Annotated[str, IdField()]
-    title: Annotated[str, TextField()]
-    text: Annotated[str, TextField()]
+    id: types.IdStr
+    title: types.Text
+    text: types.Text
 
 
 class Index(Schema):
-    id: Annotated[str, IdField(primary_key=True)]
-    text: Annotated[str, TextField()]
+    id: types.IdStrPrimary
+    text: types.Text
 
 
 def test_simple_index_instance():
