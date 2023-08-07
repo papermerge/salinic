@@ -4,7 +4,7 @@ import xapian
 from pydantic import BaseModel
 
 from .field import Field, IdField, KeywordField, TextField
-from .search import SearchQuery
+from .query import FilterQueryOP, SearchQuery
 from .utils import first
 
 
@@ -46,9 +46,16 @@ def index_keyword_field(
     prefix: str
 ):
     doc = term_generator.get_document()
-    doc.add_boolean_term(
-        prefix + insert_value.lower()
-    )
+    if isinstance(insert_value, str):
+        doc.add_boolean_term(
+            prefix + insert_value.lower()
+        )
+
+    if isinstance(insert_value, list):
+        for value in insert_value:
+            doc.add_boolean_term(
+                prefix + value.lower()
+            )
 
 
 class Session:
@@ -115,15 +122,37 @@ class Session:
 
     def exec(self, sq: SearchQuery):
         results = []
-        for name, field in sq._entity.model_fields.items():
-            self._queryparser.add_prefix(name, name)
+        query = self._queryparser.parse_query(
+            str(sq.query.free_text)
+        )
 
-        query = self._queryparser.parse_query(sq._query)
+        for name, field in sq.entity.model_fields.items():
+            self._queryparser.add_prefix(name, name)
+            filter_queries = sq.query.get_filters_by(name)
+
+            for qf in filter_queries:
+                xapian_fqueries = [
+                    xapian.Query(qf.name.upper() + filter_value.lower())
+                    for filter_value in qf.values
+                ]
+                if qf.op == FilterQueryOP.AND:
+                    op = xapian.Query.OP_AND
+                else:
+                    op = xapian.Query.OP_OR
+                # apply AND operator (OR operator) on filter queries
+                xa_fq = xapian.Query(op, xapian_fqueries)
+                # combine free text query with filter queries
+                query = xapian.Query(
+                    xapian.Query.OP_FILTER,
+                    query,
+                    xa_fq
+                )
+
         enquire = xapian.Enquire(self._engine._db)
         enquire.set_query(query)
 
         for match in enquire.get_mset(0, 10):
             fields = json.loads(match.document.get_data().decode('utf8'))
-            results.append(sq._entity(**fields))
+            results.append(sq.entity(**fields))
 
         return results
