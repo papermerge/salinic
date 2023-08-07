@@ -54,14 +54,23 @@ def first_filter_end_pos(text: str) -> int | None:
     text_len = len(text)
     end_pos = first_column_pos + 1
     pattern = r'[\w\, ]'
+    at_least_one_comma = False
+    with_quotes = False
+
     if text[end_pos] in "\'\"":
-        pattern = r'[\w\, ]'  # includes white spaces
         end_pos += 1  # skip initial quotes
-    else:
-        pattern = r'[\w\,]'  # no white spaces
+        with_quotes = True
 
     while end_pos < text_len:
         if re.match(pattern, text[end_pos]):
+            if text[end_pos] == ' ':
+                if at_least_one_comma or with_quotes:
+                    end_pos += 1
+                    continue
+                else:
+                    break
+            if text[end_pos] == ',':
+                at_least_one_comma = True
             end_pos += 1
         else:
             if text[end_pos] in "\'\"":
