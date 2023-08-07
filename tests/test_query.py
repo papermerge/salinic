@@ -23,7 +23,9 @@ def test_first_filter_beg_pos(the_input, beg_pos):
      (" tags:one", 8),
      ("some free text tags:one", 22),
      ("  tags:one", 9),
-     ("tags:'one'", 8)]
+     ("tags:'one'", 8),
+     ("tags:one,two", 11),
+     ("tags:one, two", 12)]  # tag list includes one space
 )
 def test_first_filter_end_pos(the_input, end_pos):
     assert end_pos == first_filter_end_pos(the_input)

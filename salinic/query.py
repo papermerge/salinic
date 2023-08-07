@@ -12,6 +12,8 @@ Examples:
     2. tags:important,paid => two values
     3. tags:invoice, paid => two values
 
+Notice that in example 3. there is a white space after comma.
+
 Filters may contain one single value composed from multiple
 words, but in such case you need to include them single
 or double quotes.
@@ -51,11 +53,9 @@ def first_filter_end_pos(text: str) -> int | None:
 
     text_len = len(text)
     end_pos = first_column_pos + 1
+    pattern = r'[\w\, ]'
     if text[end_pos] in "\'\"":
-        pattern = r'[\w ]'  # with white space
         end_pos += 1  # skip initial quotes
-    else:
-        pattern = r'\w'  # without white space
 
     while end_pos < text_len:
         if re.match(pattern, text[end_pos]):
