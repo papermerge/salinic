@@ -23,7 +23,7 @@ def test_first_filter_beg_pos(the_input, beg_pos):
      (" tags:one", 8),
      ("some free text tags:one", 22),
      ("  tags:one", 9),
-     ("tags:'one'", 8),
+     ("tags:'one'", 9),
      ("tags:one,two", 11),
      ("tags:one, two", 12)]  # tag list includes one space
 )
@@ -36,7 +36,7 @@ def test_first_filter_end_pos(the_input, end_pos):
     [("my tags:imp", 3, 10),
      ("tags:imp", 0, 7),
      ("some tags:imp text", 5, 12),
-     ("a tags:'my imp'", 2, 13)]
+     ("a tags:'my imp'", 2, 14)]
 )
 def test_first_filter_pos(the_input, beg_pos, end_pos):
     assert (beg_pos, end_pos) == first_filter_pos(the_input)

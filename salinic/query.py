@@ -55,12 +55,17 @@ def first_filter_end_pos(text: str) -> int | None:
     end_pos = first_column_pos + 1
     pattern = r'[\w\, ]'
     if text[end_pos] in "\'\"":
+        pattern = r'[\w\, ]'  # includes white spaces
         end_pos += 1  # skip initial quotes
+    else:
+        pattern = r'[\w\,]'  # no white spaces
 
     while end_pos < text_len:
         if re.match(pattern, text[end_pos]):
             end_pos += 1
         else:
+            if text[end_pos] in "\'\"":
+                end_pos += 1
             break
 
     return end_pos - 1
@@ -78,8 +83,18 @@ def first_filter_pos(text: str) -> Tuple[int, int] | None:
     return beg_pos, end_pos
 
 
-def extract_free_text(q: str) -> str:
-    pass
+def extract_free_text(text: str) -> str | None:
+    pos = first_filter_pos(text)
+    if pos is None:
+        return text
+
+    result = text[:pos[0]] + text[pos[1] + 1:]
+    stripped_result = result.strip()
+
+    if len(stripped_result) == 0:
+        return None
+
+    return stripped_result
 
 
 def extract_filters(q: str) -> List[str]:
