@@ -1,12 +1,88 @@
+import re
 from enum import Enum
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Tuple
+
+"""
+Filter is a character sequence of format:
+    <name>:<values>
+
+where values can be separated by comma.
+Examples:
+    1. tags:important  => one value
+    2. tags:important,paid => two values
+    3. tags:invoice, paid => two values
+
+Filters may contain one single value composed from multiple
+words, but in such case you need to include them single
+or double quotes.
+Examples:
+    1. breadcrumb:"My Documents"
+    2. breadcrumb:'My bills'
+"""
+
+
+def first_filter_beg_pos(text: str) -> int | None:
+    """Returns the beginning position of the first filter"""
+    first_column_pos = text.find(':')
+
+    if first_column_pos < 0:
+        return None
+
+    beg_pos = first_column_pos - 1
+
+    while beg_pos >= 0:
+        if re.match(r'\w', text[beg_pos]):
+            beg_pos -= 1
+        else:
+            break
+
+    return beg_pos + 1
+
+
+def first_filter_end_pos(text: str) -> int | None:
+    """Returns the end position of the first filter"""
+    if text is None:
+        return None
+
+    first_column_pos = text.find(':')
+
+    if first_column_pos < 0:
+        return None
+
+    text_len = len(text)
+    end_pos = first_column_pos + 1
+    if text[end_pos] in "\'\"":
+        pattern = r'[\w ]'  # with white space
+        end_pos += 1  # skip initial quotes
+    else:
+        pattern = r'\w'  # without white space
+
+    while end_pos < text_len:
+        if re.match(pattern, text[end_pos]):
+            end_pos += 1
+        else:
+            break
+
+    return end_pos - 1
+
+
+def first_filter_pos(text: str) -> Tuple[int, int] | None:
+    first_column_pos = text.find(':')
+
+    if first_column_pos < 0:
+        return None
+
+    beg_pos = first_filter_beg_pos(text)
+    end_pos = first_filter_end_pos(text)
+
+    return beg_pos, end_pos
 
 
 def extract_free_text(q: str) -> str:
-    return q
+    pass
 
 
-def extract_filters(q: str) -> list[str]:
+def extract_filters(q: str) -> List[str]:
     return []
 
 
