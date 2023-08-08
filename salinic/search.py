@@ -1,4 +1,4 @@
-from .search_query import SearchQuery
+from .query import SearchQuery
 
 
 class Search:
