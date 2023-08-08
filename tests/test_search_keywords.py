@@ -35,26 +35,26 @@ def test_xsearch_keywords(session: Session):
     folder_entity = Index(
         id='one',
         title='Bills.pdf',
-        breadcrumb=["home", "My Documents", "Bills.pdf"],
+        breadcrumb=["home", "Payments", "Bills.pdf"],
         tags=[]
     )
 
     session.add(folder_entity)
 
     # now we are searching my exact keyword from breadcrumb field
-    sq = Search(Index).query('Bills breadcrumb:home')
+    sq = Search(Index).query('bills breadcrumb:payments')
     found: List[Index] = session.exec(sq)
 
     assert len(found) == 1
     assert found[0].title == 'Bills.pdf'
-    assert found[0].breadcrumb == ["home", "My Documents", "Bills.pdf"]
+    assert found[0].breadcrumb == ["home", "Payments", "Bills.pdf"]
 
 
 def test_search_by_keyword_and_free_text(session: Session):
     folder_1 = Index(
         id='one',
         title='Bills.pdf',
-        breadcrumb=["home", "Documents", "Bills.pdf"],
+        breadcrumb=["home", "Payments", "Bills.pdf"],
         tags=["important"]
     )
 
@@ -63,24 +63,91 @@ def test_search_by_keyword_and_free_text(session: Session):
     folder_2 = Index(
         id='two',
         title='Bills.pdf',
-        breadcrumb=["home", "Invoices", "Bills.pdf"],
+        breadcrumb=[],
         tags=[]
     )
 
     session.add(folder_2)
 
     # should retrieve folder from home/Documents
-    sq = Search(Index).query('bills breadcrumb:Documents')
+    sq = Search(Index).query("bills breadcrumb:payments")
     found: List[Index] = session.exec(sq)
 
     assert len(found) == 1
     assert found[0].title == 'Bills.pdf'
-    assert found[0].breadcrumb == ["home", "Documents", "Bills.pdf"]
+    assert found[0].breadcrumb == ["home", "Payments", "Bills.pdf"]
 
     # filter by tag
-    sq = Search(Index).query('bills tag:important')
+    sq = Search(Index).query('bills tags:important')
     found: List[Index] = session.exec(sq)
     assert len(found) == 1
     assert found[0].title == 'Bills.pdf'
-    assert found[0].breadcrumb == ["home", "Documents", "Bills.pdf"]
+    assert found[0].breadcrumb == ["home", "Payments", "Bills.pdf"]
     assert found[0].tags == ['important']
+
+
+def test_search_only_by_tags_single_tag(session: Session):
+    node_1 = Index(
+        id='one',
+        title='one.pdf',
+        breadcrumb=["home", "folder_1", "one.pdf"],
+        tags=["important"]
+    )
+    session.add(node_1)
+
+    folder_2 = Index(
+        id='two',
+        title='two.pdf',
+        breadcrumb=["home", "folder_2", "two.pdf"],
+        tags=["important"]
+    )
+
+    session.add(folder_2)
+
+    folder_3 = Index(
+        id='free',
+        title='free.pdf',
+        breadcrumb=["home", "folder_3", "free.pdf"],
+        tags=[]
+    )
+
+    session.add(folder_3)
+
+    sq = Search(Index).query("tags:important")
+    found: List[Index] = session.exec(sq)
+
+    assert len(found) == 2
+    assert {'one.pdf', 'two.pdf'} == {node.title for node in found}
+
+
+def test_search_only_by_tags_multiple_tags(session: Session):
+    node_1 = Index(
+        id='one',
+        title='one.pdf',
+        breadcrumb=["home", "folder_1", "one.pdf"],
+        tags=["important"]
+    )
+    session.add(node_1)
+
+    folder_2 = Index(
+        id='two',
+        title='two.pdf',
+        breadcrumb=["home", "folder_2", "two.pdf"],
+        tags=["important", "paid"]
+    )
+
+    session.add(folder_2)
+
+    folder_3 = Index(
+        id='free',
+        title='free.pdf',
+        breadcrumb=["home", "folder_3", "free.pdf"],
+        tags=[]
+    )
+
+    session.add(folder_3)
+
+    sq = Search(Index).query("tags:important,paid")
+    found: List[Index] = session.exec(sq)
+
+    assert len(found) == 1

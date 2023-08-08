@@ -149,10 +149,12 @@ class FilterQuery:
 
 
 class Query:
+    original_query: str
     free_text: FreeTextQuery
     filters: List[FilterQuery]
 
     def __init__(self, query: str):
+        self.original_query = query
         self.free_text = FreeTextQuery(extract_free_text(query))
         self.filters = [
             FilterQuery(filter_q) for filter_q in extract_filters(query)

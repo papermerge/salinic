@@ -4,7 +4,7 @@ import xapian
 from pydantic import BaseModel
 
 from .field import Field, IdField, KeywordField, TextField
-from .query import FilterQueryOP, SearchQuery
+from .query import SearchQuery
 from .utils import first
 
 
@@ -48,11 +48,17 @@ def index_keyword_field(
     doc = term_generator.get_document()
     if isinstance(insert_value, str):
         doc.add_boolean_term(
+            prefix + insert_value
+        )
+        doc.add_boolean_term(
             prefix + insert_value.lower()
         )
 
     if isinstance(insert_value, list):
         for value in insert_value:
+            doc.add_boolean_term(
+                prefix + value
+            )
             doc.add_boolean_term(
                 prefix + value.lower()
             )
@@ -123,25 +129,23 @@ class Session:
     def exec(self, sq: SearchQuery):
         results = []
 
-        query = self._queryparser.parse_query(
-            str(sq.query.free_text)
-        )
+        if str(sq.query.free_text):
+            query = self._queryparser.parse_query(
+                str(sq.query.free_text)
+            )
+        else:
+            query = xapian.Query('')
 
         for name, field in sq.entity.model_fields.items():
-            self._queryparser.add_prefix(name, name)
+            self._queryparser.add_prefix(name.upper(), name.upper())
             filter_queries = sq.query.get_filters_by(name)
-
             for qf in filter_queries:
                 xapian_fqueries = [
                     xapian.Query(qf.name.upper() + filter_value.lower())
                     for filter_value in qf.values
                 ]
-                if qf.op == FilterQueryOP.AND:
-                    op = xapian.Query.OP_AND
-                else:
-                    op = xapian.Query.OP_OR
                 # apply AND operator (OR operator) on filter queries
-                xa_fq = xapian.Query(op, xapian_fqueries)
+                xa_fq = xapian.Query(xapian.Query.OP_AND, xapian_fqueries)
                 # combine free text query with filter queries
                 query = xapian.Query(
                     xapian.Query.OP_FILTER,
@@ -150,6 +154,7 @@ class Session:
                 )
 
         enquire = xapian.Enquire(self._engine._db)
+
         enquire.set_query(query)
 
         for match in enquire.get_mset(0, 10):
