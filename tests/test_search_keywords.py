@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-import pytest
 from typing_extensions import Annotated
 
 from salinic import IdField, KeywordField, Schema, Search, Session, types
@@ -31,7 +30,7 @@ def test_basic_index_add_and_read(session: Session):
     assert found[0].breadcrumb == ["home", "My Documents", "Bills.pdf"]
 
 
-def test_basic_index_add_and_search(session: Session):
+def test_xsearch_keywords(session: Session):
     """basic add and search of model with list of keywords field"""
     folder_entity = Index(
         id='one',
@@ -43,7 +42,7 @@ def test_basic_index_add_and_search(session: Session):
     session.add(folder_entity)
 
     # now we are searching my exact keyword from breadcrumb field
-    sq = Search(Index).query('breadcrumb:My Documents')
+    sq = Search(Index).query('Bills breadcrumb:home')
     found: List[Index] = session.exec(sq)
 
     assert len(found) == 1
@@ -51,13 +50,12 @@ def test_basic_index_add_and_search(session: Session):
     assert found[0].breadcrumb == ["home", "My Documents", "Bills.pdf"]
 
 
-@pytest.mark.skip()
 def test_search_by_keyword_and_free_text(session: Session):
     folder_1 = Index(
         id='one',
         title='Bills.pdf',
-        breadcrumb=["home", "My Documents", "Bills.pdf"],
-        tags=[]
+        breadcrumb=["home", "Documents", "Bills.pdf"],
+        tags=["important"]
     )
 
     session.add(folder_1)
@@ -71,10 +69,18 @@ def test_search_by_keyword_and_free_text(session: Session):
 
     session.add(folder_2)
 
-    # should retrieve folder from home/My Documents
-    sq = Search(Index).query('Bills.pdf breadcrumb:My Documents')
+    # should retrieve folder from home/Documents
+    sq = Search(Index).query('bills breadcrumb:Documents')
     found: List[Index] = session.exec(sq)
 
     assert len(found) == 1
     assert found[0].title == 'Bills.pdf'
-    assert found[0].breadcrumb == ["home", "My Documents", "Bills.pdf"]
+    assert found[0].breadcrumb == ["home", "Documents", "Bills.pdf"]
+
+    # filter by tag
+    sq = Search(Index).query('bills tag:important')
+    found: List[Index] = session.exec(sq)
+    assert len(found) == 1
+    assert found[0].title == 'Bills.pdf'
+    assert found[0].breadcrumb == ["home", "Documents", "Bills.pdf"]
+    assert found[0].tags == ['important']

@@ -106,14 +106,25 @@ def extract_free_text(text: str) -> str | None:
     return stripped_result
 
 
-def extract_filters(q: str) -> List[str]:
-    return []
+def extract_filters(text: str) -> List[str]:
+    # TODO: support multiple filters
+    result = []
+    pos = first_filter_pos(text)
+    if pos is None:
+        return result
+
+    result.append(text[pos[0]:pos[1] + 1])
+
+    return result
 
 
 class FreeTextQuery(NamedTuple):
-    text: str
+    text: str | None
 
     def __str__(self):
+        if not self.text:
+            return ''
+
         return self.text
 
 
@@ -123,13 +134,18 @@ class FilterQueryOP(Enum):
     OR = 2
 
 
-class FilterQuery(NamedTuple):
+class FilterQuery:
     text: str  # original filter text
     name: str
     values: List[str]
     # which operation should the filter perform on the
     # values? Should it be AND? Should it be OR?
-    op: FilterQueryOP  # AND | OR
+    op: FilterQueryOP = FilterQueryOP.AND  # AND | OR
+
+    def __init__(self, text: str):
+        self.text = text
+        self.name, self.values = text.split(':')
+        self.values = [v.strip() for v in self.values.split(',')]
 
 
 class Query:
@@ -145,6 +161,9 @@ class Query:
     def get_filters_by(self, name: str) -> List[FilterQuery]:
         return [f for f in self.filters if f.name == name]
 
+    def __repr__(self):
+        return f"Query(free_text='{self.free_text}', filters={self.filters})"
+
 
 class SearchQuery:
     query: Query
@@ -152,3 +171,9 @@ class SearchQuery:
     def __init__(self, entity, query: str):
         self.entity = entity
         self.query = Query(query)
+
+    def __str__(self):
+        return f"SearchQuery(query={self.query}, entity={self.entity})"
+
+    def __repr__(self):
+        return f"SearchQuery(query={self.query}, entity={self.entity})"

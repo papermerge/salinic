@@ -67,18 +67,29 @@ def test_extract_free_text_with_quotes():
 
 @pytest.mark.parametrize(
     "the_input,expected_output",
-    [("free text", None),
-     ("Some document tags:important", "tags:important"),
-     ("bills   tags:important", "tags:important"),
-     ("tags:important bills", "tags:important"),
-     ("invoice.pdf breadcrumb:My Documents", "breadcrumb:My Documents"),
-     ("breadcrumb:'My Documents' free text search ", "breadrumb:My Documents"),
-     ('breadcrumb:"My Documents" free text search ', "breadcrumb:My Documents")]
+    [("free text", []),
+     ("Some document tags:important", ["tags:important"]),
+     ("bills   tags:important", ["tags:important"]),
+     ("tags:important bills", ["tags:important"]),
+     ("invoice.pdf breadcrumb:'My Documents'", ["breadcrumb:'My Documents'"]),
+     ("breadcrumb:'My Documents' free text search ",
+        ["breadcrumb:'My Documents'"]
+      ),
+     (
+             'breadcrumb:"My Documents" free text search ',
+             ['breadcrumb:"My Documents"']
+     )]
 )
 def test_extract_filters(the_input, expected_output):
     actual_output = extract_filters(the_input)
 
     assert actual_output == expected_output
+
+
+def test_extract_filters_single_quates_ending():
+    actual = extract_filters('breadcrumb:"My Documents"')
+
+    assert actual == ['breadcrumb:"My Documents"']
 
 
 @pytest.mark.parametrize(
@@ -97,3 +108,11 @@ def test_query_filter(the_input, expected_name, expected_values):
 def test_free_text_query():
     ftq = FreeTextQuery("some free text")
     assert str(ftq) == 'some free text'
+
+
+def test_free_text_query_with_empty_text():
+    ftq = FreeTextQuery(None)
+    assert str(ftq) == ''
+
+    ftq2 = FreeTextQuery('')
+    assert str(ftq2) == ''

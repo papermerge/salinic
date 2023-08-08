@@ -122,6 +122,7 @@ class Session:
 
     def exec(self, sq: SearchQuery):
         results = []
+
         query = self._queryparser.parse_query(
             str(sq.query.free_text)
         )
