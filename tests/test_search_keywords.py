@@ -87,6 +87,12 @@ def test_search_by_keyword_and_free_text(session: Session):
 
 
 def test_search_only_by_tags_single_tag(session: Session):
+    """There 3 documents. Only two documents have assigned tag 'important'.
+    When user searches only by tag i.e. filters documents by tag:
+
+        user query -> tags:important
+
+    only the documents with that tag are returned"""
     node_1 = Index(
         id='one',
         title='one.pdf',
@@ -95,23 +101,23 @@ def test_search_only_by_tags_single_tag(session: Session):
     )
     session.add(node_1)
 
-    folder_2 = Index(
+    node_2 = Index(
         id='two',
         title='two.pdf',
         breadcrumb=["home", "folder_2", "two.pdf"],
         tags=["important"]
     )
 
-    session.add(folder_2)
+    session.add(node_2)
 
-    folder_3 = Index(
+    node_3 = Index(
         id='free',
         title='free.pdf',
         breadcrumb=["home", "folder_3", "free.pdf"],
         tags=[]
     )
 
-    session.add(folder_3)
+    session.add(node_3)
 
     sq = Search(Index).query("tags:important")
     found: List[Index] = session.exec(sq)
@@ -121,6 +127,14 @@ def test_search_only_by_tags_single_tag(session: Session):
 
 
 def test_search_only_by_tags_multiple_tags(session: Session):
+    """There are 3 documents:
+
+    * (1) with one tag `important`
+    * (2) with two tags `important` and `paid`
+    * (3) without tags
+
+    Search query "tags:important,paid" will return only document 2.
+    """
     node_1 = Index(
         id='one',
         title='one.pdf',
