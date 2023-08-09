@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "salinic"
-version = "0.2.4"
+version = "0.2.5"
 description = "Search abstraction layer"
 authors = ["Eugen Ciur <eugen@papermerge.com>"]
 readme = "README.md"
