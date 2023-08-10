@@ -42,3 +42,39 @@ class Schema(BaseModel):
                 return name
 
         return None
+
+    def get_field_value(self, field_name):
+        """Returns the field value to actually be stored on the index
+
+        Value actually stored in the index may differ from the one in the
+        model. Let's consider an example when index schema has a field
+        composed of a list of colored tags (tag has a name and a color):
+
+            from salinic import IdField, KeywordField, Schema
+            from pydantic import BaseModel
+
+            class ColoredTag(BaseModel):
+                name: str   # e.g. of value 'important'
+                color: str  # e.g. of value '#ff00dd'
+
+            class Index(Schema):
+                id: Annotated[str, IdField(primary_key=True)]
+                tags: Annotated[List[ColoredTag], KeywordField()]
+
+        In context of full text search user will
+        look up models only based on tags name; in other words, it does
+        not make sense to index the color of the tag.
+        However, when it comes to displaying the tag to the user, user of course
+        wants to see the colored tag (not just names).
+
+        `get_field_value` returns value of the given field which will actually
+        be indexed (i.e. user will search by that specific part of the field).
+        This method may be overriden by defining method with following name:
+
+            `get_idx_value__<field_name>`
+        """
+        if hasattr(self, f'get_idx_value__{field_name}'):
+            func = getattr(self, f'get_idx_value__{field_name}')
+            return func()
+
+        return getattr(self, field_name)
