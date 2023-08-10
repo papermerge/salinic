@@ -81,7 +81,7 @@ class Session:
 
         for name, field in entity.model_fields.items():
             field_instance = first(field.metadata)
-            value = getattr(entity, name)
+            value = entity.get_field_value(name)
             if isinstance(value, Field):
                 insert_value = value.default
             else:
