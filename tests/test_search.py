@@ -65,7 +65,7 @@ def test_remove_document_from_index(session: Session):
     assert len(results) == 1
 
     # remove document from the index
-    session.remove(doc)
+    session.remove("IDone")
 
     # perform same query as in (1)
     sq2 = Search(SimpleIndex).query('document')

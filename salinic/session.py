@@ -115,15 +115,14 @@ class Session:
             raise ValueError("No primary field defined")
 
         identifier = getattr(entity, primary_key_name)
-        idterm = f"Q{identifier}"
+        idterm = f"{primary_key_name.upper()}{identifier}"
         doc.add_boolean_term(idterm)
 
         self._engine._db.replace_document(idterm, doc)
         self._engine._db.commit()
 
-    def remove(self, entity: BaseModel):
-        idterm = f"Q{entity.pk}"
-        self._engine._db.delete_document(idterm)
+    def remove(self, docid: str):
+        self._engine._db.delete_document(docid)
         self._engine._db.commit()
 
     def exec(self, sq: SearchQuery):
