@@ -64,7 +64,57 @@ def index_keyword_field(
             )
 
 
-class Session:
+class IndexRO:
+
+    def __init__(self, client, schema, language="en"):
+        self.client = client
+        self._schema = schema
+        self._language = language
+        self._termgenerator = xapian.TermGenerator()
+        self._termgenerator.set_stemmer(xapian.Stem(language))
+        self._queryparser = xapian.QueryParser()
+        self._queryparser.set_stemmer(xapian.Stem(language))
+        self._queryparser.set_stemming_strategy(self._queryparser.STEM_SOME)
+
+    def search(self, sq: SearchQuery):
+        results = []
+
+        if str(sq.query.free_text):
+            query = self._queryparser.parse_query(
+                str(sq.query.free_text)
+            )
+        else:
+            query = xapian.Query('')
+
+        for name, field in sq.entity.model_fields.items():
+            self._queryparser.add_prefix(name.upper(), name.upper())
+            filter_queries = sq.query.get_filters_by(name)
+            for qf in filter_queries:
+                xapian_fqueries = [
+                    xapian.Query(qf.name.upper() + filter_value.lower())
+                    for filter_value in qf.values
+                ]
+                # apply AND operator (OR operator) on filter queries
+                xa_fq = xapian.Query(xapian.Query.OP_AND, xapian_fqueries)
+                # combine free text query with filter queries
+                query = xapian.Query(
+                    xapian.Query.OP_FILTER,
+                    query,
+                    xa_fq
+                )
+
+        enquire = xapian.Enquire(self.client.db)
+
+        enquire.set_query(query)
+
+        for match in enquire.get_mset(0, 10):
+            fields = json.loads(match.document.get_data().decode('utf8'))
+            results.append(sq.entity(**fields))
+
+        return results
+
+
+class IndexRW:
 
     def __init__(self, client, schema, language="en"):
         self.client = client

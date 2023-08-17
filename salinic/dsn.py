@@ -23,5 +23,9 @@ class Dsn:
     def scheme(self):
         return self._parts[0]
 
+    @property
+    def db_path(self):
+        return self._parts[1]
+
     def __str__(self):
         return self._dsn

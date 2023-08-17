@@ -1,13 +1,10 @@
 import pytest
 
-from salinic.engine import create_engine
-from salinic.session import Session
+from salinic.engine import Engine, create_engine
 
 
 @pytest.fixture()
-def session(tmp_path) -> Session:
+def engine(tmp_path) -> Engine:
     d = tmp_path / "index_db"
     d.mkdir()
-    engine = create_engine(f"xapian://{d}", mode='ro')
-
-    return Session(engine)
+    return create_engine(f"xapian://{d}")

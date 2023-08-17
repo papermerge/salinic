@@ -2,10 +2,10 @@ from typing import List, Optional
 
 from typing_extensions import Annotated
 
-from salinic import IdField, Schema, Search, Session, types
+from salinic import Engine, IdField, IndexRW, Schema, Search, types
 
 
-class Index(Schema):
+class Model(Schema):
     """Index
 
     Documents are indexed by page. Note that we place in same index
@@ -28,9 +28,9 @@ class Index(Schema):
     page_count: types.OptionalNumeric = None  # None in case of folder entity
 
 
-def test_basic_index_add_and_search(session: Session):
-
-    folder_entity = Index(
+def test_basic_index_add_and_search(engine: Engine):
+    index = IndexRW(engine, schema=Model)
+    folder_entity = Model(
         id='one',
         title='Bills',
         entity_type='folder',
@@ -38,9 +38,9 @@ def test_basic_index_add_and_search(session: Session):
         parent_id='folder_parent_id'
     )
 
-    session.add(folder_entity)
+    index.add(folder_entity)
 
-    page_entity = Index(
+    page_entity = Model(
         id='two',
         title='My Document.pdf',
         document_id='doc_id_1',
@@ -53,14 +53,14 @@ def test_basic_index_add_and_search(session: Session):
         parent_id='folder_parent_id'
     )
 
-    session.add(page_entity)
+    index.add(page_entity)
 
-    sq = Search(Index).query('page of')
-    found: List[Index] = session.exec(sq)
+    sq = Search(Model).query('page of')
+    found: List[Model] = index.search(sq)
     assert found[0].entity_type == 'page'
     assert found[0].title == 'My Document.pdf'
 
-    sq = Search(Index).query('bill')
-    found: List[Index] = session.exec(sq)
+    sq = Search(Model).query('bill')
+    found: List[Model] = index.search(sq)
     assert found[0].entity_type == 'folder'
     assert found[0].title == 'Bills'
