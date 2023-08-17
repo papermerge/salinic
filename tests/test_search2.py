@@ -1,8 +1,9 @@
 from typing import List, Optional
 
+import pytest
 from typing_extensions import Annotated
 
-from salinic import Engine, IdField, IndexRW, Schema, Search, types
+from salinic import IdField, IndexRW, Schema, Search, types
 
 
 class Model(Schema):
@@ -28,8 +29,8 @@ class Model(Schema):
     page_count: types.OptionalNumeric = None  # None in case of folder entity
 
 
-def test_basic_index_add_and_search(engine: Engine):
-    index = IndexRW(engine, schema=Model)
+@pytest.mark.parametrize('index', [Model], indirect=True)
+def test_basic_index_add_and_search(index: IndexRW):
     folder_entity = Model(
         id='one',
         title='Bills',

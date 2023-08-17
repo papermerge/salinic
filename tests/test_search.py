@@ -1,4 +1,6 @@
-from salinic import Engine, IndexRW, Schema, Search, types
+import pytest
+
+from salinic import IndexRW, Schema, Search, types
 
 
 class SimpleModel(Schema):
@@ -7,8 +9,8 @@ class SimpleModel(Schema):
     text: types.Text
 
 
-def test_simple_search(engine: Engine):
-    index = IndexRW(engine, schema=SimpleModel)
+@pytest.mark.parametrize('index', [SimpleModel], indirect=True)
+def test_simple_search(index: IndexRW):
     doc = SimpleModel(id='one', title='My Document.pdf', text='some text')
     index.add(doc)
 
@@ -27,13 +29,13 @@ def test_simple_search(engine: Engine):
     assert len(results) == 0
 
 
-def test_adding_document_multiple_times(engine: Engine):
+@pytest.mark.parametrize('index', [SimpleModel], indirect=True)
+def test_adding_document_multiple_times(index: IndexRW):
     """When adding same document multiple times - search results are
     not affected; in other words if same document (i.e. with same ID)
     is added multiple times to the index - it will be inserted in the index only
     once - thus search result will reveal only single instance
     of the document"""
-    index = IndexRW(engine, schema=SimpleModel)
     doc = SimpleModel(id='one', title='My Document.pdf', text='some text')
 
     # add same document multiple times
@@ -54,8 +56,8 @@ def test_adding_document_multiple_times(engine: Engine):
     assert results[0].title == 'My Document.pdf'
 
 
-def test_remove_document_from_index(engine: Engine):
-    index = IndexRW(engine, schema=SimpleModel)
+@pytest.mark.parametrize('index', [SimpleModel], indirect=True)
+def test_remove_document_from_index(index: IndexRW):
     doc = SimpleModel(id='one', title='My Document.pdf', text='some text')
     index.add(doc)
 
@@ -95,8 +97,12 @@ class ModelHasFieldsWithoutAnnotation(Schema):
     parent_id: str
 
 
-def test_fields_without_annotation_wont_be_indexed(engine: Engine):
-    index = IndexRW(engine, schema=ModelHasFieldsWithoutAnnotation)
+@pytest.mark.parametrize(
+    'index',
+    [ModelHasFieldsWithoutAnnotation],
+    indirect=True
+)
+def test_fields_without_annotation_wont_be_indexed(index: IndexRW):
     doc = ModelHasFieldsWithoutAnnotation(
         id='id_one',
         title='My Document.pdf',
@@ -148,8 +154,12 @@ class ModelWithIntPrimaryKey(Schema):
     text: types.Text
 
 
-def test_int_primary_key(engine: Engine):
-    index = IndexRW(engine, schema=ModelHasFieldsWithoutAnnotation)
+@pytest.mark.parametrize(
+    'index',
+    [ModelHasFieldsWithoutAnnotation],
+    indirect=True
+)
+def test_int_primary_key(index: IndexRW):
     doc = ModelWithIntPrimaryKey(unique_id=1, text='ho ho ho!')
     index.add(doc)
     sq = Search(ModelWithIntPrimaryKey).query('ho ho')

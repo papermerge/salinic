@@ -1,6 +1,6 @@
 import pytest
 
-from salinic import Engine, IndexRW, Schema, types
+from salinic import IndexRW, Schema, types
 
 
 class SimpleModel(Schema):
@@ -9,10 +9,10 @@ class SimpleModel(Schema):
     text: types.Text
 
 
-def test_add_simple_index_instance_to_session(engine: Engine):
+@pytest.mark.parametrize('index', [SimpleModel], indirect=True)
+def test_add_simple_index_instance_to_session(index: IndexRW):
     # Models added to the session must have exactly one IdField
     # with primary_key=True
-    index = IndexRW(engine, schema=SimpleModel)
     doc = SimpleModel(id='one', title='my title', text='some text')
     index.add(doc)
 
@@ -25,9 +25,9 @@ class ModelWithoutPrimaryKey(Schema):
     text: types.Text
 
 
-def test_insert_into_index_entity_without_primary_key(engine: Engine):
+@pytest.mark.parametrize('index', [ModelWithoutPrimaryKey], indirect=True)
+def test_insert_into_index_entity_without_primary_key(index: IndexRW):
     """Index schema should feature IdField with primary_key=True"""
-    index = IndexRW(engine, schema=ModelWithoutPrimaryKey)
     doc = ModelWithoutPrimaryKey(id='one', title='my title', text='some text')
 
     with pytest.raises(ValueError):

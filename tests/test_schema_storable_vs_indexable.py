@@ -1,10 +1,10 @@
 from typing import List, Optional, Tuple
 
+import pytest
 from pydantic import BaseModel
 from typing_extensions import Annotated
 
-from salinic import (Engine, IdField, IndexRW, KeywordField, Schema, Search,
-                     types)
+from salinic import IdField, IndexRW, KeywordField, Schema, Search, types
 
 
 class Tag(BaseModel):
@@ -80,8 +80,8 @@ class Model2(Schema):
         return list([tag.name for tag in self.tags])
 
 
-def test_index_vs_stored(engine: Engine):
-    index = IndexRW(engine, Model2)
+@pytest.mark.parametrize('index', [Model2], indirect=True)
+def test_index_vs_stored(index: IndexRW):
     doc1 = Model2(
         id="one",
         tags=[

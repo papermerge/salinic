@@ -1,9 +1,9 @@
 from typing import List, Optional
 
+import pytest
 from typing_extensions import Annotated
 
-from salinic import (Engine, IdField, IndexRW, KeywordField, Schema, Search,
-                     types)
+from salinic import IdField, IndexRW, KeywordField, Schema, Search, types
 
 
 class Model(Schema):
@@ -13,9 +13,9 @@ class Model(Schema):
     tags: Annotated[Optional[List[str]], KeywordField()]  # optional keywords
 
 
-def test_basic_index_add_and_read(engine: Engine):
+@pytest.mark.parametrize('index', [Model], indirect=True)
+def test_basic_index_add_and_read(index: IndexRW):
     """basic insert/serialization of model with list of keywords field"""
-    index = IndexRW(engine, schema=Model)
     folder_entity = Model(
         id='one',
         title='Bills.pdf',
@@ -32,9 +32,9 @@ def test_basic_index_add_and_read(engine: Engine):
     assert found[0].breadcrumb == ["home", "My Documents", "Bills.pdf"]
 
 
-def test_xsearch_keywords(engine: Engine):
+@pytest.mark.parametrize('index', [Model], indirect=True)
+def test_xsearch_keywords(index: IndexRW):
     """basic add and search of model with list of keywords field"""
-    index = IndexRW(engine, schema=Model)
     folder_entity = Model(
         id='one',
         title='Bills.pdf',
@@ -53,8 +53,8 @@ def test_xsearch_keywords(engine: Engine):
     assert found[0].breadcrumb == ["home", "Payments", "Bills.pdf"]
 
 
-def test_search_by_keyword_and_free_text(engine: Engine):
-    index = IndexRW(engine, schema=Model)
+@pytest.mark.parametrize('index', [Model], indirect=True)
+def test_search_by_keyword_and_free_text(index: IndexRW):
     folder_1 = Model(
         id='one',
         title='Bills.pdf',
@@ -90,14 +90,14 @@ def test_search_by_keyword_and_free_text(engine: Engine):
     assert found[0].tags == ['important']
 
 
-def test_search_only_by_tags_single_tag(engine: Engine):
+@pytest.mark.parametrize('index', [Model], indirect=True)
+def test_search_only_by_tags_single_tag(index: IndexRW):
     """There 3 documents. Only two documents have assigned tag 'important'.
     When user searches only by tag i.e. filters documents by tag:
 
         user query -> tags:important
 
     only the documents with that tag are returned"""
-    index = IndexRW(engine, schema=Model)
     node_1 = Model(
         id='one',
         title='one.pdf',
@@ -131,7 +131,8 @@ def test_search_only_by_tags_single_tag(engine: Engine):
     assert {'one.pdf', 'two.pdf'} == {node.title for node in found}
 
 
-def test_search_only_by_tags_multiple_tags(engine: Engine):
+@pytest.mark.parametrize('index', [Model], indirect=True)
+def test_search_only_by_tags_multiple_tags(index: IndexRW):
     """There are 3 documents:
 
     * (1) with one tag `important`
@@ -140,7 +141,6 @@ def test_search_only_by_tags_multiple_tags(engine: Engine):
 
     Search query "tags:important,paid" will return only document 2.
     """
-    index = IndexRW(engine, schema=Model)
     node_1 = Model(
         id='one',
         title='one.pdf',

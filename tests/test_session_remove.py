@@ -1,5 +1,6 @@
+import pytest
 
-from salinic import Engine, IndexRW, Schema, Search, types
+from salinic import IndexRW, Schema, Search, types
 
 
 class SimpleModel(Schema):
@@ -9,10 +10,10 @@ class SimpleModel(Schema):
     text: types.Text
 
 
-def test_remove_entity_by_primary_field(engine: Engine):
+@pytest.mark.parametrize('index', [SimpleModel], indirect=True)
+def test_remove_entity_by_primary_field(index: IndexRW):
     """In order to remove document from the index
     provide field name (ID) and its value"""
-    index = IndexRW(engine, schema=SimpleModel)
     doc = SimpleModel(
         id='one',
         user_id='user_1',
@@ -40,10 +41,10 @@ def test_remove_entity_by_primary_field(engine: Engine):
     assert len(results_2) == 0
 
 
-def test_remove_entity_by_user_id_field(engine: Engine):
+@pytest.mark.parametrize('index', [SimpleModel], indirect=True)
+def test_remove_entity_by_user_id_field(index: IndexRW):
     """In order to remove document from the index
     provide field name (USER_ID) and its value"""
-    index = IndexRW(engine, schema=SimpleModel)
     doc = SimpleModel(
         id='one',
         title='my title',
