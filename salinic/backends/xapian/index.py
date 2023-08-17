@@ -8,62 +8,6 @@ from salinic.query import SearchQuery
 from salinic.utils import first
 
 
-def index_text_field(
-    term_generator: xapian.TermGenerator,
-    insert_value: str,
-    prefix: str,
-    weight: int = 1
-):
-    term_generator.index_text(
-        insert_value,
-        weight,
-        prefix  # the prefix
-    )
-
-    # index field without prefix for general search
-    term_generator.index_text(insert_value)
-    term_generator.increase_termpos()
-
-
-def index_id_field(
-    term_generator: xapian.TermGenerator,
-    insert_value: str,
-    prefix: str,
-    weight: int = 1
-):
-    doc = term_generator.get_document()
-    id_as_term = insert_value.replace('-', '')
-    doc.add_boolean_term(prefix + id_as_term)
-
-    term_generator.index_text(id_as_term, weight, prefix)
-    term_generator.index_text(id_as_term)
-    term_generator.increase_termpos()
-
-
-def index_keyword_field(
-    term_generator: xapian.TermGenerator,
-    insert_value: str,
-    prefix: str
-):
-    doc = term_generator.get_document()
-    if isinstance(insert_value, str):
-        doc.add_boolean_term(
-            prefix + insert_value
-        )
-        doc.add_boolean_term(
-            prefix + insert_value.lower()
-        )
-
-    if isinstance(insert_value, list):
-        for value in insert_value:
-            doc.add_boolean_term(
-                prefix + value
-            )
-            doc.add_boolean_term(
-                prefix + value.lower()
-            )
-
-
 class IndexRO:
 
     def __init__(self, client, schema, language="en"):
@@ -212,3 +156,59 @@ class IndexRW:
             results.append(sq.entity(**fields))
 
         return results
+
+
+def index_text_field(
+    term_generator: xapian.TermGenerator,
+    insert_value: str,
+    prefix: str,
+    weight: int = 1
+):
+    term_generator.index_text(
+        insert_value,
+        weight,
+        prefix  # the prefix
+    )
+
+    # index field without prefix for general search
+    term_generator.index_text(insert_value)
+    term_generator.increase_termpos()
+
+
+def index_id_field(
+    term_generator: xapian.TermGenerator,
+    insert_value: str,
+    prefix: str,
+    weight: int = 1
+):
+    doc = term_generator.get_document()
+    id_as_term = insert_value.replace('-', '')
+    doc.add_boolean_term(prefix + id_as_term)
+
+    term_generator.index_text(id_as_term, weight, prefix)
+    term_generator.index_text(id_as_term)
+    term_generator.increase_termpos()
+
+
+def index_keyword_field(
+    term_generator: xapian.TermGenerator,
+    insert_value: str,
+    prefix: str
+):
+    doc = term_generator.get_document()
+    if isinstance(insert_value, str):
+        doc.add_boolean_term(
+            prefix + insert_value
+        )
+        doc.add_boolean_term(
+            prefix + insert_value.lower()
+        )
+
+    if isinstance(insert_value, list):
+        for value in insert_value:
+            doc.add_boolean_term(
+                prefix + value
+            )
+            doc.add_boolean_term(
+                prefix + value.lower()
+            )
