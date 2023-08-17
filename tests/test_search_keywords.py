@@ -135,8 +135,8 @@ def test_search_only_by_tags_single_tag(index: IndexRW):
 def test_search_only_by_tags_multiple_tags(index: IndexRW):
     """There are 3 documents:
 
-    * (1) with one tag `important`
-    * (2) with two tags `important` and `paid`
+    * (1) with one tag: `important`
+    * (2) with two tags: `important` and `paid`
     * (3) without tags
 
     Search query "tags:important,paid" will return only document 2.
