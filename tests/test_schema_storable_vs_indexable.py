@@ -1,9 +1,10 @@
 from typing import List, Optional, Tuple
 
+import pytest
 from pydantic import BaseModel
 from typing_extensions import Annotated
 
-from salinic import IdField, KeywordField, Schema, Search, Session, types
+from salinic import IdField, IndexRW, KeywordField, Schema, Search, types
 
 
 class Tag(BaseModel):
@@ -23,7 +24,7 @@ Tags = Annotated[
 ]
 
 
-class Index(Schema):
+class Model(Schema):
     id: Annotated[str, IdField(primary_key=True)]  # page id | node_id
     title: types.Text  # document or folder title
     breadcrumb: Breadcrumb  # mandatory keywords
@@ -47,16 +48,16 @@ def test_get_field_value():
         Tag(name='important', fg_color='white', bg_color='red'),
         Tag(name='paid', fg_color='white', bg_color='green')
     ]
-    index = Index(
+    model = Model(
         id="one",
         title="Some title",
         tags=tags,
         breadcrumb=breadcrumb
     )
 
-    assert index.get_field_value('title') == 'Some title'
-    assert index.get_field_value('tags') == ['important', 'paid']
-    assert index.get_field_value('breadcrumb') == ['home', 'my documents']
+    assert model.get_field_value('title') == 'Some title'
+    assert model.get_field_value('tags') == ['important', 'paid']
+    assert model.get_field_value('breadcrumb') == ['home', 'my documents']
 
 
 class ColoredTag(BaseModel):
@@ -70,7 +71,7 @@ ColoredTags = Annotated[
 ]
 
 
-class Index2(Schema):
+class Model2(Schema):
     id: Annotated[str, IdField(primary_key=True)]  # page id | node_id
     tags: ColoredTags
 
@@ -79,26 +80,27 @@ class Index2(Schema):
         return list([tag.name for tag in self.tags])
 
 
-def test_index_vs_stored(session: Session):
-    doc1 = Index2(
+@pytest.mark.parametrize('index', [Model2], indirect=True)
+def test_index_vs_stored(index: IndexRW):
+    doc1 = Model2(
         id="one",
         tags=[
             ColoredTag(name="important", color="#ff0000"),
             ColoredTag(name="paid", color="#ffdd1a")
         ],
     )
-    session.add(doc1)
+    index.add(doc1)
 
-    doc2 = Index2(
+    doc2 = Model2(
         id="two",
         tags=[],
     )
 
-    session.add(doc2)
+    index.add(doc2)
 
-    sq = Search(Index2).query("tags:important")
+    sq = Search(Model2).query("tags:important")
 
-    found: List[Index2] = session.exec(sq)
+    found: List[Model2] = index.search(sq)
 
     assert len(found) == 1
     # search result retrieves tags field as list of ColoredTag instances

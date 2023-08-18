@@ -1,13 +1,21 @@
 import pytest
 
-from salinic.engine import AccessMode, create_engine
-from salinic.session import Session
+from salinic import IndexRW
+from salinic.engine import Engine, create_engine
 
 
 @pytest.fixture()
-def session(tmp_path) -> Session:
+def engine(tmp_path) -> Engine:
     d = tmp_path / "index_db"
     d.mkdir()
-    engine = create_engine(f"xapian://{d}", mode=AccessMode.RW)
+    return create_engine(f"xapian:///{d}")
 
-    return Session(engine)
+
+@pytest.fixture()
+def index(tmp_path, request):
+    d = tmp_path / "index_db"
+    d.mkdir()
+
+    _engine = create_engine(f"xapian:///{d}")
+
+    return IndexRW(_engine, schema=request.param)

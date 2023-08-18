@@ -1,28 +1,11 @@
-from enum import Enum
 
-import xapian
-
-from .utils import get_db_path
-
-
-class AccessMode(Enum):
-    RO = 1  # read only
-    RW = 2  # read/write
+from salinic.url import make_url
 
 
 class Engine:
-
-    def __init__(self, dsn: str, mode: AccessMode = AccessMode.RO):
-        self._dsn = dsn
-        self._db_path = get_db_path(dsn)
-        if mode == AccessMode.RO:
-            self._db = xapian.Database(self._db_path)
-        else:  # mode == AccessMode.RW
-            self._db = xapian.WritableDatabase(
-                self._db_path,
-                xapian.DB_CREATE_OR_OPEN
-            )
+    def __init__(self, url: str):
+        self.url = make_url(url)
 
 
-def create_engine(dsn: str, mode: AccessMode = AccessMode.RO) -> Engine:
-    return Engine(dsn, mode=mode)
+def create_engine(url: str) -> Engine:
+    return Engine(url)

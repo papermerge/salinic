@@ -1,16 +1,20 @@
+from typing import NamedTuple
 
-class Field:
-    def __init__(self, primary_key=False, default=None):
-        self.primary_key = primary_key
-        self.default = default
+
+class Field(NamedTuple):
+    primary_key: bool = False
+    store: bool = True
+    index: bool = True
+    general_search: bool = False
+    default: any = None
 
 
 class KeywordField(Field):
-    pass
+    multi_value: bool = False
 
 
 class TextField(Field):
-    pass
+    multi_lang: bool = False
 
 
 class NumericField(Field):
@@ -18,4 +22,8 @@ class NumericField(Field):
 
 
 class IdField(Field):
+    pass
+
+
+class UUIDField(Field):
     pass
