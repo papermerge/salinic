@@ -55,3 +55,47 @@ def test_add_model(requests_mock):
     }
 
     assert expected == mock.request_history[0].json()
+
+
+def test_remove_model_by_field_id(requests_mock):
+    client = ClientRW(make_url("solr://localhost:8983/index"))
+
+    # it is expected that solr will receive following post request
+    mock = requests_mock.post(
+        'http://localhost:8983/solr/index/update/json/docs',
+        json={}  # irrelevant for this test
+    )
+
+    # send http request to solr
+    client.remove(id='one')  # this is what is tested here
+
+    # let's check now what actually was sent
+    expected = {
+        'delete': {
+            'id': 'one'
+        }
+    }
+
+    assert expected == mock.request_history[0].json()
+
+
+def test_remove_model_by_field_document_id(requests_mock):
+    client = ClientRW(make_url("solr://localhost:8983/index"))
+
+    # it is expected that solr will receive following post request
+    mock = requests_mock.post(
+        'http://localhost:8983/solr/index/update/json/docs',
+        json={}  # irrelevant for this test
+    )
+
+    # send http request to solr
+    client.remove(document_id='abc-xyz-1')  # this is what is tested here
+
+    # let's check now what actually was sent
+    expected = {
+        'delete': {
+            'document_id': 'abc-xyz-1'
+        }
+    }
+
+    assert expected == mock.request_history[0].json()

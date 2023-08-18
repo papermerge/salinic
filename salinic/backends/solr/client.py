@@ -16,11 +16,11 @@ class ClientRW(Base):
         data['add'] = {'doc': model.model_dump()}
         return requests.post(self.http_url, json=data)
 
-    def remove(self, doc_id):
+    def remove(self, **kwargs):
         # change data specific for delete
         data = {}
-        data['delete'] = {'id': doc_id}
-        return requests.post(self.http_url, data=data)
+        data['delete'] = kwargs
+        return requests.post(self.http_url, json=data)
 
     @property
     def http_url(self) -> str:
