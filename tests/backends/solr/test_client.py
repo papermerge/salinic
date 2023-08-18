@@ -40,7 +40,7 @@ def test_add_model(requests_mock):
 
     model = Model(id='one', title='My Documents', text='Some content')
 
-    # send http request to solr
+    # sends http request to solr
     client.add(model)  # this is what is tested here
 
     # let's check now what actually was sent
@@ -66,7 +66,7 @@ def test_remove_model_by_field_id(requests_mock):
         json={}  # irrelevant for this test
     )
 
-    # send http request to solr
+    # sends http request to solr
     client.remove(id='one')  # this is what is tested here
 
     # let's check now what actually was sent
@@ -88,7 +88,7 @@ def test_remove_model_by_field_document_id(requests_mock):
         json={}  # irrelevant for this test
     )
 
-    # send http request to solr
+    # sends http request to solr
     client.remove(document_id='abc-xyz-1')  # this is what is tested here
 
     # let's check now what actually was sent
