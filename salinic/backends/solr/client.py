@@ -1,4 +1,5 @@
 import requests
+from pydantic import BaseModel
 
 from salinic.url import URL
 
@@ -9,11 +10,11 @@ class Base:
 
 
 class ClientRW(Base):
-    def add(self, **attr):
+    def add(self, model: BaseModel):
         # change data specific for add
         data = {}
-        data['add'] = {'doc': {}}
-        return requests.post(self.http_url, data=data)
+        data['add'] = {'doc': model.model_dump()}
+        return requests.post(self.http_url, json=data)
 
     def remove(self, doc_id):
         # change data specific for delete
