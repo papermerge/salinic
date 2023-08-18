@@ -18,7 +18,7 @@ class IndexRO(Base):
 
 class IndexRW(Base):
     def add(self, entity: BaseModel):
-        pass
+        self.client.add(entity.model_dump())
 
     def remove(self, docid: str):
-        pass
+        self.client.remove(docid)

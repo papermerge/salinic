@@ -1,6 +1,6 @@
 import xapian
 
-from salinic.dsn import Dsn
+from salinic.url import URL
 from salinic.utils import get_db_path
 
 RO = 'ro'
@@ -9,8 +9,8 @@ RW = 'rw'
 
 class ClientRW:
 
-    def __init__(self, dsn: Dsn):
-        self._db_path = dsn.db_path
+    def __init__(self, url: URL):
+        self._db_path = url.index
         self._db = xapian.WritableDatabase(
             self._db_path,
             xapian.DB_CREATE_OR_OPEN

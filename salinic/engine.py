@@ -1,11 +1,11 @@
 
-from salinic.dsn import Dsn
+from salinic.url import make_url
 
 
 class Engine:
-    def __init__(self, dsn: str):
-        self.dsn = Dsn(dsn)
+    def __init__(self, url: str):
+        self.url = make_url(url)
 
 
-def create_engine(dsn: str) -> Engine:
-    return Engine(dsn)
+def create_engine(url: str) -> Engine:
+    return Engine(url)
