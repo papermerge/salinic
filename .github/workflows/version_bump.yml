@@ -11,11 +11,6 @@ on:
           - major
           - minor
           - micro
-      publish-to-pypi:
-        description: 'Publish to PyPi'
-        type: boolean
-        required: true
-        default: true
 
 jobs:
   version-bump:
