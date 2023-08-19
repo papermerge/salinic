@@ -71,5 +71,4 @@ def get_rw_index_backend(engine, schema):
     ClientKlass = get_rw_client_backend_class(engine)
     client = ClientKlass(engine.url)
     IndexKlass = get_rw_index_backend_class(engine)
-
     return IndexKlass(client, schema)
