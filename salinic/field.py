@@ -7,14 +7,16 @@ class Field(NamedTuple):
     index: bool = True
     general_search: bool = False
     default: any = None
+    multi_value: bool = False
+    multi_lang: bool = False
 
 
 class KeywordField(Field):
-    multi_value: bool = False
+    pass
 
 
 class TextField(Field):
-    multi_lang: bool = False
+    pass
 
 
 class NumericField(Field):
