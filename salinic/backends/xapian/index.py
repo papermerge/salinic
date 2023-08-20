@@ -57,6 +57,9 @@ class IndexRO:
 
         return results
 
+    def index_schema_dump(self):
+        return {}
+
 
 class IndexRW:
 
@@ -156,6 +159,9 @@ class IndexRW:
             results.append(sq.entity(**fields))
 
         return results
+
+    def index_schema_dump(self):
+        return {}
 
 
 def index_text_field(

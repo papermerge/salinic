@@ -16,11 +16,11 @@ from salinic.url import make_url
      ("solrs://localhost:8443/momo",
       "https://localhost:8443/solr/momo/update/json/docs")]
 )
-def test_client_url(input_url, expected_url):
+def test_client_http_update_url(input_url, expected_url):
     url = make_url(input_url)
     client = ClientRW(url)
 
-    assert client.http_url == expected_url
+    assert client.http_update_url == expected_url
 
 
 class Model(Schema):
@@ -41,7 +41,7 @@ def test_add_model(requests_mock):
     model = Model(id='one', title='My Documents', text='Some content')
 
     # sends http request to solr
-    client.add(model)  # this is what is tested here
+    client.add(model.model_dump())  # this is what is tested here
 
     # let's check now what actually was sent
     expected = {

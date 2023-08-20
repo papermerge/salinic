@@ -11,6 +11,9 @@ class IndexBase:
     def search(self, sq: SearchQuery):
         return self.backend.search(sq)
 
+    def index_schema_dump(self):
+        return self.backend.index_schema_dump()
+
 
 class IndexRO(IndexBase):
 
@@ -61,7 +64,7 @@ def get_rw_index_backend_class(engine):
 
 def get_ro_index_backend(engine, schema):
     ClientKlass = get_ro_client_backend_class(engine)
-    client = ClientKlass(engine.dsn)
+    client = ClientKlass(engine.url)
     IndexKlass = get_ro_index_backend_class(engine)
 
     return IndexKlass(client, schema)
