@@ -24,11 +24,11 @@ def test_index_search(requests_mock):
             "status": 0,
             "QTime": 41,
             "params": {
-                "q": "*"
+                "q": "my+document"
             }
         },
         "response": {
-            "numFound": 7,
+            "numFound": 1,
             "start": 0,
             "numFoundExact": True,
             "docs": [
