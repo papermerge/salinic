@@ -16,13 +16,16 @@ class Base:
 
     def search(self, sq: SearchQuery):
         result = self.client.search(sq)
-        if result['numFound'] == 0:
+        if result['response']['numFound'] == 0:
             return []
 
         docs_list = [
             trim_suffixes(doc) for doc in result['response']['docs']
         ]
-        docs = filter_keys(docs_list, ['_version_'])
+        docs = [
+            filter_keys(some_doc, ['_version_'])
+            for some_doc in docs_list
+        ]
 
         return [sq.entity(**doc) for doc in docs]
 
