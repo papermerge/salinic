@@ -1,21 +1,12 @@
 from typing import List
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
-from salinic.field import CopyFieldDump, Field, FieldDump
+from salinic.field import Field, NumericField
 from salinic.query import SearchQuery
 from salinic.utils import filter_keys, first, trim_suffixes
 
-
-def to_dash(string: str) -> str:
-    return '-'.join(word for word in string.split('_'))
-
-
-class IndexSchemaDump(BaseModel):
-    model_config = ConfigDict(alias_generator=to_dash)
-
-    add_field: List[FieldDump]
-    add_copy_field: List[CopyFieldDump]
+from .types import CopyFieldDump, FieldDump, FieldType, IndexSchemaDump
 
 
 class Base:
@@ -79,10 +70,15 @@ class Base:
             if field_instance.multi_lang:
                 continue
 
+            if isinstance(field_instance, NumericField):
+                _type = FieldType.pint
+            else:
+                _type = FieldType.text_general
+
             add_fields.append(
                 FieldDump(
                     name=name,
-                    type='text_general',
+                    type=_type,
                     multiValued=field_instance.multi_value,
                     indexed=field_instance.index,
                     stored=field_instance.store

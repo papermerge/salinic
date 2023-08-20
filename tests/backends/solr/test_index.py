@@ -1,10 +1,11 @@
 from operator import itemgetter
-from typing import Optional
+from typing import Optional, Tuple
 
 import pytest
 from typing_extensions import Annotated
 
-from salinic import IdField, IndexRW, TextField, UUIDField, create_engine
+from salinic import (IdField, IndexRW, KeywordField, TextField, UUIDField,
+                     create_engine, types)
 from salinic.schema import Schema
 
 
@@ -152,6 +153,88 @@ def test_index_copy_fields_dump_3(solr_index):
     }
 
     assert actual['add-field'] == expected['add-field']
+    assert sort_by(
+        actual['add-copy-field'], 'source'
+    ) == sort_by(
+        expected['add-copy-field'], 'source'
+    )
+
+
+class Model_4(Schema):
+    id: Annotated[str, UUIDField(primary_key=True)]   # noqa
+    tags: Annotated[
+        Optional[Tuple[str, str]],
+        KeywordField(multi_value=True)  # noqa
+    ]
+
+
+@pytest.mark.parametrize('solr_index', [Model_4], indirect=True)
+def test_index_copy_fields_dump_4(solr_index):
+    actual = solr_index.index_schema_dump()
+
+    expected = {
+        'add-field': [{
+            'name': 'tags',
+            'type': 'text_general',
+            'multiValued': True,
+            'indexed': True,
+            'stored': True
+        }],
+        'add-copy-field': [
+            {
+                "source": "id",
+                "dest": ["_text_"]
+            }
+        ]
+    }
+
+    assert actual['add-field'] == expected['add-field']
+    assert sort_by(
+        actual['add-copy-field'], 'source'
+    ) == sort_by(
+        expected['add-copy-field'], 'source'
+    )
+
+
+class Model_5(Schema):
+    id: Annotated[str, UUIDField(primary_key=True)]   # noqa
+    page_number: types.OptionalNumeric = None
+    page_count: types.OptionalNumeric = None
+
+
+@pytest.mark.parametrize('solr_index', [Model_5], indirect=True)
+def test_index_copy_fields_dump_5(solr_index):
+    actual = solr_index.index_schema_dump()
+
+    expected = {
+        'add-field': [{
+            'name': 'page_number',
+            'type': 'pint',
+            'indexed': True,
+            'multiValued': False,
+            'stored': True
+        }, {
+            'name': 'page_count',
+            'type': 'pint',
+            'indexed': True,
+            'multiValued': False,
+            'stored': True
+        }],
+        'add-copy-field': [
+            {
+                "source": "id",
+                "dest": ["_text_"]
+            }
+        ]
+    }
+
+    assert sort_by(
+        actual['add-field'],
+        'name'
+    ) == sort_by(
+        expected['add-field'],
+        'name'
+    )
     assert sort_by(
         actual['add-copy-field'], 'source'
     ) == sort_by(
