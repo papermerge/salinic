@@ -248,18 +248,23 @@ def test_index_copy_fields_dump_5(schema_manager):
 
 @pytest.mark.parametrize('schema_manager', [Model_5], indirect=True)
 def test_schema_management_apply_dict_dump_5(schema_manager, requests_mock):
+    # `page_number` field exists in solr schema, thus it is expected to be part
+    # of 'replace-field'
     requests_mock.get(
         'http://localhost:8983/solr/index/schema/fields/page_number',
-        status_code=200
+        status_code=200  # field exists in solr schema
     )
+    # `page_count` field does NOT exist in solr schema, thus it is expected to
+    # be part of the 'add-field'
     requests_mock.get(
         'http://localhost:8983/solr/index/schema/fields/page_count',
-        status_code=404
+        status_code=404  # field does NOT exist in solr schema
     )
 
     actual = schema_manager.apply_dict_dump()
 
     expected = {
+        # fields which are already part of the solr schema
         'replace-field': [{
             'name': 'page_number',
             'type': 'pint',
@@ -267,6 +272,7 @@ def test_schema_management_apply_dict_dump_5(schema_manager, requests_mock):
             'multiValued': False,
             'stored': True
         }],
+        # fields which are not yet part of the solr schema
         'add-field': [{
             'name': 'page_count',
             'type': 'pint',
