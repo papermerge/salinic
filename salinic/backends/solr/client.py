@@ -41,6 +41,17 @@ class ClientRW(Base):
             json=data
         )
 
+    def field_exists(self, name: str) -> bool:
+        response = requests.get(self.http_field_url(name))
+
+        if response.status_code == 404:
+            return False
+
+        return True
+
+    def http_field_url(self, name):
+        return f"{self.http_index_url}/schema/fields/{name}"
+
     @property
     def http_schema_url(self):
         return f"{self.http_index_url}/schema"

@@ -90,6 +90,44 @@ def test_index_copy_fields_dump_2(schema_manager):
     )
 
 
+@pytest.mark.parametrize('schema_manager', [Model_2], indirect=True)
+def test_schema_manager_apply_dict_dump_1(schema_manager, requests_mock):
+
+    requests_mock.get(
+        'http://localhost:8983/solr/index/schema/fields/document_id',
+        status_code=200
+    )
+
+    actual = schema_manager.apply_dict_dump()
+
+    expected = {
+        'replace-field': [{
+            'name': 'document_id',
+            'type': 'text_general',
+            'multiValued': False,
+            'indexed': False,
+            'stored': True
+        }],
+        'add-copy-field': [
+            {
+                "source": "id",
+                "dest": ["_text_"]
+            },
+            {
+                "source": "document_id",
+                "dest": ["_text_"]
+            }
+        ]
+    }
+
+    assert actual['replace-field'] == expected['replace-field']
+    assert sort_by(
+        actual['add-copy-field'], 'source'
+    ) == sort_by(
+        expected['add-copy-field'], 'source'
+    )
+
+
 class Model_3(Schema):
     id: Annotated[str, IdField(primary_key=True)]   # noqa
     user_id: Annotated[
@@ -206,6 +244,50 @@ def test_index_copy_fields_dump_5(schema_manager):
     ) == sort_by(
         expected['add-copy-field'], 'source'
     )
+
+
+@pytest.mark.parametrize('schema_manager', [Model_5], indirect=True)
+def test_schema_management_apply_dict_dump_5(schema_manager, requests_mock):
+    requests_mock.get(
+        'http://localhost:8983/solr/index/schema/fields/page_number',
+        status_code=200
+    )
+    requests_mock.get(
+        'http://localhost:8983/solr/index/schema/fields/page_count',
+        status_code=404
+    )
+
+    actual = schema_manager.apply_dict_dump()
+
+    expected = {
+        'replace-field': [{
+            'name': 'page_number',
+            'type': 'pint',
+            'indexed': True,
+            'multiValued': False,
+            'stored': True
+        }],
+        'add-field': [{
+            'name': 'page_count',
+            'type': 'pint',
+            'indexed': True,
+            'multiValued': False,
+            'stored': True
+        }],
+        'add-copy-field': [
+            {
+                "source": "id",
+                "dest": ["_text_"]
+            }
+        ]
+    }
+
+    assert len(actual['add-field']) == 1
+    assert len(actual['replace-field']) == 1
+    assert len(actual['add-copy-field']) == 1
+    assert actual['add-field'][0] == expected['add-field'][0]
+    assert actual['replace-field'][0] == expected['replace-field'][0]
+    assert actual['add-copy-field'][0] == expected['add-copy-field'][0]
 
 
 def sort_by(list_of_dicts, field):
