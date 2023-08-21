@@ -1,11 +1,11 @@
 import pytest
 
-from salinic import IndexRW
+from salinic import SchemaManager
 from salinic.engine import create_engine
 
 
 @pytest.fixture()
-def solr_index(request):
+def schema_manager(request):
     engine = create_engine("solr://localhost:8983/index")
 
-    return IndexRW(engine, schema=request.param)
+    return SchemaManager(engine, model=request.param)

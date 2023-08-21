@@ -10,11 +10,14 @@ class SchemaManager:
     def create(self):
         return self.backend.create()
 
-    def apply(self):
-        return self.backend.apply()
+    def create_dict_dump(self):
+        return self.backend.create_dict_dump()
 
-    def delete(self):
-        return self.backend.delete()
+    def apply_dict_dump(self):
+        return self.backend.apply_dict_dump()
+
+    def delete_dict_dump(self):
+        return self.backend.delete_dict_dump()
 
 
 def get_schema_manager_backend(engine, model):

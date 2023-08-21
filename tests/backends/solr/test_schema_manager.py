@@ -20,9 +20,9 @@ class Model_1(Schema):
     ]
 
 
-@pytest.mark.parametrize('solr_index', [Model_1], indirect=True)
-def test_index_copy_fields_dump_1(solr_index):
-    actual = solr_index.index_schema_dump()
+@pytest.mark.parametrize('schema_manager', [Model_1], indirect=True)
+def test_index_copy_fields_dump_1(schema_manager):
+    actual = schema_manager.create_dict_dump()
 
     expected = {
         'add-field': [],
@@ -58,9 +58,9 @@ class Model_2(Schema):
     ]
 
 
-@pytest.mark.parametrize('solr_index', [Model_2], indirect=True)
-def test_index_copy_fields_dump_2(solr_index):
-    actual = solr_index.index_schema_dump()
+@pytest.mark.parametrize('schema_manager', [Model_2], indirect=True)
+def test_index_copy_fields_dump_2(schema_manager):
+    actual = schema_manager.create_dict_dump()
 
     expected = {
         'add-field': [{
@@ -98,9 +98,9 @@ class Model_3(Schema):
     ]
 
 
-@pytest.mark.parametrize('solr_index', [Model_3], indirect=True)
-def test_index_copy_fields_dump_3(solr_index):
-    actual = solr_index.index_schema_dump()
+@pytest.mark.parametrize('schema_manager', [Model_3], indirect=True)
+def test_index_copy_fields_dump_3(schema_manager):
+    actual = schema_manager.create_dict_dump()
 
     expected = {
         'add-field': [{
@@ -134,9 +134,9 @@ class Model_4(Schema):
     ]
 
 
-@pytest.mark.parametrize('solr_index', [Model_4], indirect=True)
-def test_index_copy_fields_dump_4(solr_index):
-    actual = solr_index.index_schema_dump()
+@pytest.mark.parametrize('schema_manager', [Model_4], indirect=True)
+def test_index_copy_fields_dump_4(schema_manager):
+    actual = schema_manager.create_dict_dump()
 
     expected = {
         'add-field': [{
@@ -168,9 +168,9 @@ class Model_5(Schema):
     page_count: types.OptionalNumeric = None
 
 
-@pytest.mark.parametrize('solr_index', [Model_5], indirect=True)
-def test_index_copy_fields_dump_5(solr_index):
-    actual = solr_index.index_schema_dump()
+@pytest.mark.parametrize('schema_manager', [Model_5], indirect=True)
+def test_index_copy_fields_dump_5(schema_manager):
+    actual = schema_manager.create_dict_dump()
 
     expected = {
         'add-field': [{

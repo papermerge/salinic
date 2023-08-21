@@ -12,16 +12,15 @@ class SchemaManager:
         self.model = model
 
     def create(self):
-        self.client.update_schema(self._create_dict)
+        self.client.update_schema(self.create_dict_dump())
 
     def apply(self):
-        self.client.update_schema(self._apply_dict)
+        self.client.update_schema(self.apply_dict_dump())
 
     def delete(self):
-        self.client.update_schema(self._delete_dict)
+        self.client.update_schema(self.delete_dict_dump())
 
-    @property
-    def _create_dict(self):
+    def create_dict_dump(self):
         add_copy_field = [
             m.model_dump() for _, m in self._copy_fields()
         ]
@@ -34,8 +33,7 @@ class SchemaManager:
             'add-copy-field': add_copy_field
         }
 
-    @property
-    def _apply_dict(self):
+    def apply_dict_dump(self):
         ret = {
             'add-field': [],
             'replace-field': [],
@@ -52,8 +50,7 @@ class SchemaManager:
 
         return ret
 
-    @property
-    def _delete_dict(self):
+    def delete_dict_dump(self):
         copy_fields = [
             m.model_dump() for _, m in self._copy_fields()
         ]
