@@ -25,7 +25,7 @@ class ClientRW(Base):
 
     def add(self, some_dict):
         # change data specific for add
-        data = {}
+        data = dict()
         data['add'] = {'doc': some_dict}
         return requests.post(self.http_update_url, json=data)
 
@@ -34,6 +34,27 @@ class ClientRW(Base):
         data = {}
         data['delete'] = kwargs
         return requests.post(self.http_update_url, json=data)
+
+    def update_schema(self, data):
+        return requests.post(
+            self.http_schema_url,
+            json=data
+        )
+
+    def field_exists(self, name: str) -> bool:
+        response = requests.get(self.http_field_url(name))
+
+        if response.status_code == 404:
+            return False
+
+        return True
+
+    def http_field_url(self, name):
+        return f"{self.http_index_url}/schema/fields/{name}"
+
+    @property
+    def http_schema_url(self):
+        return f"{self.http_index_url}/schema"
 
     @property
     def http_index_url(self) -> str:

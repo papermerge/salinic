@@ -11,9 +11,6 @@ class IndexBase:
     def search(self, sq: SearchQuery):
         return self.backend.search(sq)
 
-    def index_schema_dump(self):
-        return self.backend.index_schema_dump()
-
 
 class IndexRO(IndexBase):
 

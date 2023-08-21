@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import List
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 def to_dash(string: str) -> str:
@@ -25,10 +25,3 @@ class FieldDump(BaseModel):
     multiValued: bool
     indexed: bool
     stored: bool
-
-
-class IndexSchemaDump(BaseModel):
-    model_config = ConfigDict(alias_generator=to_dash)
-
-    add_field: List[FieldDump]
-    add_copy_field: List[CopyFieldDump]
