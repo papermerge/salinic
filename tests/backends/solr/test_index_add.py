@@ -17,7 +17,7 @@ def test_index_add(requests_mock):
 
     # it is expected that solr will receive following post request
     mock = requests_mock.post(
-        'http://localhost:8983/solr/index/update/json/docs',
+        'http://localhost:8983/solr/index/update',
         json={}  # irrelevant for this test
     )
 

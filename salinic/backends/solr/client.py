@@ -1,7 +1,11 @@
+import logging
+
 import requests
 
 from salinic.query import SearchQuery
 from salinic.url import URL
+
+logger = logging.getLogger(__name__)
 
 
 class Base:
@@ -27,13 +31,33 @@ class ClientRW(Base):
         # change data specific for add
         data = dict()
         data['add'] = {'doc': some_dict}
-        return requests.post(self.http_update_url, json=data)
+
+        params = {'commit': 'true'}
+        logger.debug(
+            f'POST {self.http_update_url} json={data} params={params}'
+        )
+
+        return requests.post(
+            self.http_update_url,
+            json=data,
+            params=params
+        )
 
     def remove(self, **kwargs):
         # change data specific for delete
         data = {}
         data['delete'] = kwargs
-        return requests.post(self.http_update_url, json=data)
+
+        params = {'commit': 'true'}
+        logger.debug(
+            f'POST {self.http_update_url} json={data} params={params}'
+        )
+
+        return requests.post(
+            self.http_update_url,
+            json=data,
+            params=params
+        )
 
     def update_schema(self, data):
         return requests.post(
@@ -95,7 +119,7 @@ class ClientRW(Base):
         Example of http url to be returned:
             http://localhost:8983/solr/papermerge_index/update/json/docs
         """
-        return f"{self.http_index_url}/update/json/docs"
+        return f"{self.http_index_url}/update"
 
 
 ClientRO = ClientRW
