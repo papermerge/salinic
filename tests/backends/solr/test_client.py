@@ -10,11 +10,11 @@ from salinic.url import make_url
 @pytest.mark.parametrize(
     "input_url, expected_url",
     [("solr://localhost:8983/index_papermerge",
-      "http://localhost:8983/solr/index_papermerge/update/json/docs"),
+      "http://localhost:8983/solr/index_papermerge/update"),
      ("solr://localhost:6666/my-index",
-      "http://localhost:6666/solr/my-index/update/json/docs"),
+      "http://localhost:6666/solr/my-index/update"),
      ("solrs://localhost:8443/momo",
-      "https://localhost:8443/solr/momo/update/json/docs")]
+      "https://localhost:8443/solr/momo/update")]
 )
 def test_client_http_update_url(input_url, expected_url):
     url = make_url(input_url)
@@ -34,7 +34,7 @@ def test_add_model(requests_mock):
 
     # it is expected that solr will receive following post request
     mock = requests_mock.post(
-        'http://localhost:8983/solr/index/update/json/docs',
+        'http://localhost:8983/solr/index/update',
         json={}  # irrelevant for this test
     )
 
@@ -62,7 +62,7 @@ def test_remove_model_by_field_id(requests_mock):
 
     # it is expected that solr will receive following post request
     mock = requests_mock.post(
-        'http://localhost:8983/solr/index/update/json/docs',
+        'http://localhost:8983/solr/index/update',
         json={}  # irrelevant for this test
     )
 
@@ -84,7 +84,7 @@ def test_remove_model_by_field_document_id(requests_mock):
 
     # it is expected that solr will receive following post request
     mock = requests_mock.post(
-        'http://localhost:8983/solr/index/update/json/docs',
+        'http://localhost:8983/solr/index/update',
         json={}  # irrelevant for this test
     )
 
