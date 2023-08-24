@@ -73,8 +73,11 @@ class Schema(BaseModel):
 
             `get_idx_value__<field_name>`
         """
-        if hasattr(self, f'get_idx_value__{field_name}'):
+        if self.needs_transform(field_name):
             func = getattr(self, f'get_idx_value__{field_name}')
             return func()
 
         return getattr(self, field_name)
+
+    def needs_transform(self, field_name):
+        return hasattr(self, f'get_idx_value__{field_name}')

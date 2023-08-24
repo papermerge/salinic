@@ -1,5 +1,13 @@
 # App1
 
+Apply index schema:
+
+    python app1/main.py schema-apply
+
+Note that you can run schema-apply command as many times as you want.
+If schema changes already exist in the index - nothing will be applied.
+Schema changes need to be applied before adding any data to the index.
+
 Add data to index:
 
     python app1/main.py index-add data/nodes1.json

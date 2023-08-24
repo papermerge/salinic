@@ -1,3 +1,5 @@
+import json
+
 from pydantic import BaseModel
 
 from salinic.field import Field
@@ -29,7 +31,6 @@ class Base:
 class IndexRW(Base):
     def add(self, model: BaseModel):
         model_dict = model.model_dump()
-
         for name, field in self.schema.model_fields.items():
             field_instance: Field = first(field.metadata)
             if field_instance.multi_lang:
@@ -39,6 +40,11 @@ class IndexRW(Base):
                 lang_key = model.model_config.get('lang_field_name', 'en')
                 lang_value = model_dict[lang_key]
                 model_dict[f'{name}_txt_{lang_value}'] = model_dict.pop(name)
+            if model.needs_transform(name):
+                actual_value = model.get_field_value(name)
+                orig_value = model_dict.pop(name)
+                model_dict[name] = actual_value
+                model_dict[f'{name}_orig_'] = json.dumps(orig_value)
 
         self.client.add(model_dict)
 

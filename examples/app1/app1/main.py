@@ -3,7 +3,7 @@ import json
 import typer
 from app1.schema import Model
 
-from salinic import IndexRO, IndexRW, Search, create_engine
+from salinic import IndexRO, IndexRW, SchemaManager, Search, create_engine
 
 app = typer.Typer()
 
@@ -29,6 +29,16 @@ def index_delete(docid: str):
     engine = create_engine(INDEX_URL)
     index = IndexRW(engine, schema=Model)
     index.remove({"id": docid})
+
+
+@app.command()
+def schema_apply(show: bool = False):
+    engine = create_engine(INDEX_URL)
+    schema_manager = SchemaManager(engine, model=Model)
+    if show:
+        print(schema_manager.apply_dict_dump())
+    else:
+        schema_manager.apply()
 
 
 @app.command()
