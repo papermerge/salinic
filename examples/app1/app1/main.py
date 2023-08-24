@@ -3,14 +3,17 @@ import json
 import typer
 from app1.schema import Model
 
-from salinic import IndexRW, create_engine
+from salinic import IndexRO, IndexRW, Search, create_engine
 
 app = typer.Typer()
 
 
+INDEX_URL = "solr://localhost:8983/myindex"
+
+
 @app.command()
 def index_add(data_path: str):
-    engine = create_engine("solr://localhost:8983/myindex")
+    engine = create_engine(INDEX_URL)
     index = IndexRW(engine, schema=Model)
 
     with open(data_path) as f:
@@ -22,13 +25,19 @@ def index_add(data_path: str):
 
 
 @app.command()
-def index_delete(title: str):
-    print(f"index delete {title}")
+def index_delete(docid: str):
+    pass
 
 
 @app.command()
-def search(query: str):
-    print(f"search {query}!")
+def search(querystring: str):
+    engine = create_engine(INDEX_URL)
+    index = IndexRO(engine, schema=Model)
+
+    sq = Search(Model).query(querystring)
+
+    for entity in index.search(sq):
+        print(entity)
 
 
 if __name__ == "__main__":
