@@ -37,11 +37,16 @@ class ClientRW(Base):
             f'POST {self.http_update_url} json={data} params={params}'
         )
 
-        return requests.post(
+        response = requests.post(
             self.http_update_url,
             json=data,
             params=params
         )
+        if response.status_code == 404:
+            raise ValueError(
+                f"Index {self.http_index_url} not found"
+            )
+        return response
 
     def remove(self, **kwargs):
         # change data specific for delete
@@ -53,11 +58,18 @@ class ClientRW(Base):
             f'POST {self.http_update_url} json={data} params={params}'
         )
 
-        return requests.post(
+        response = requests.post(
             self.http_update_url,
             json=data,
             params=params
         )
+
+        if response.status_code == 404:
+            raise ValueError(
+                f"Index {self.http_index_url} not found"
+            )
+
+        return response
 
     def update_schema(self, data):
         return requests.post(

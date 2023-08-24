@@ -1,0 +1,11 @@
+[
+  {
+    "id": "817ad10c-16fd-4b45-9bad-17cf166b19d0",
+    "entity_type": "folder",
+    "title": "My Documents",
+    "breadcrumb": [
+      ["88e1b325-b68b-4114-a12c-ee48d294eca2", ".home"],
+      ["99e1b325-b68b-4114-a12c-ee48d294eca2", "My Documents"]
+    ]
+  }
+]
