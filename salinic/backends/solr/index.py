@@ -42,8 +42,8 @@ class IndexRW(Base):
 
         self.client.add(model_dict)
 
-    def remove(self, docid: str):
-        self.client.remove(docid)
+    def remove(self, kwargs):
+        self.client.remove(**kwargs)
 
 
 IndexRO = IndexRW

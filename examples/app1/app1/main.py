@@ -26,7 +26,9 @@ def index_add(data_path: str):
 
 @app.command()
 def index_delete(docid: str):
-    pass
+    engine = create_engine(INDEX_URL)
+    index = IndexRW(engine, schema=Model)
+    index.remove({"id": docid})
 
 
 @app.command()
