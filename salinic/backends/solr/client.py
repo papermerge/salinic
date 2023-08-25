@@ -36,12 +36,16 @@ class ClientRW(Base):
         logger.debug(
             f'POST {self.http_update_url} json={data} params={params}'
         )
-
-        return requests.post(
+        response = requests.post(
             self.http_update_url,
             json=data,
             params=params
         )
+        if response.status_code == 404:
+            raise ValueError(
+                f"Index {self.http_index_url} not found"
+            )
+        return response
 
     def remove(self, **kwargs):
         # change data specific for delete
@@ -53,11 +57,18 @@ class ClientRW(Base):
             f'POST {self.http_update_url} json={data} params={params}'
         )
 
-        return requests.post(
+        response = requests.post(
             self.http_update_url,
             json=data,
             params=params
         )
+
+        if response.status_code == 404:
+            raise ValueError(
+                f"Index {self.http_index_url} not found"
+            )
+
+        return response
 
     def update_schema(self, data):
         return requests.post(
@@ -66,7 +77,16 @@ class ClientRW(Base):
         )
 
     def field_exists(self, name: str) -> bool:
+        # for normal fields
         response = requests.get(self.http_field_url(name))
+
+        if response.status_code == 404:
+            return False
+
+        return True
+
+    def dynamicfield_exists(self, name: str) -> bool:
+        response = requests.get(self.http_dynamicfield_url(name))
 
         if response.status_code == 404:
             return False
@@ -75,6 +95,9 @@ class ClientRW(Base):
 
     def http_field_url(self, name):
         return f"{self.http_index_url}/schema/fields/{name}"
+
+    def http_dynamicfield_url(self, name):
+        return f"{self.http_index_url}/schema/dynamicfields/{name}"
 
     @property
     def http_schema_url(self):

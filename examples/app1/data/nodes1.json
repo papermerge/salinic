@@ -1,0 +1,42 @@
+[
+  {
+    "id": "817ad10c-16fd-4b45-9bad-17cf166b19d0",
+    "entity_type": "folder",
+    "title": "My Documents",
+    "breadcrumb": [
+      ["88e1b325-b68b-4114-a12c-ee48d294eca2", ".home"],
+      ["99e1b325-b68b-4114-a12c-ee48d294eca2", "My Documents"]
+    ]
+  },
+  {
+    "id": "ad790a64-9753-49a6-b3b6-619ac899650e",
+    "entity_type": "page",
+    "title": "invoice.pdf",
+    "document_id": "605cbaa7-d359-4849-afc3-671a5d539095",
+    "text": "Due payment is 25,0 euro",
+    "breadcrumb": [
+      ["88e1b325-b68b-4114-a12c-ee48d294eca2", ".home"],
+      ["99e1b325-b68b-4114-a12c-ee48d294eca2", "My Documents"],
+      ["21e1b325-b68b-4114-a12c-ee48d294eca2", "invoice.pdf"]
+    ],
+    "tags": [
+      {"name":  "important", "fg_color":  "#ffffff", "bg_color": "#ffffff"}
+    ]
+  },
+  {
+    "id": "703846bd-bc87-4504-a189-7ccc7ea609fb",
+    "entity_type": "page",
+    "title": "anmeldung.pdf",
+    "lang": "de",
+    "document_id": "386ac3e9-88de-4bf3-b5fd-3048f8610b9e",
+    "text": "Eugen Ciur wohnt in Berlin",
+    "breadcrumb": [
+      ["88e1b325-b68b-4114-a12c-ee48d294eca2", ".home"],
+      ["99e1b325-b68b-4114-a12c-ee48d294eca2", "My Documents"],
+      ["33e1b325-b68b-4114-a12c-ee48d294eca2", "anmeldung.pdf"]
+    ],
+    "tags": [
+      {"name":  "red", "fg_color":  "#ffffff", "bg_color": "#ffffff"}
+    ]
+  }
+]

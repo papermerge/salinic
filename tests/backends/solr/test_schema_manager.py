@@ -97,6 +97,10 @@ def test_schema_manager_apply_dict_dump_1(schema_manager, requests_mock):
         'http://localhost:8983/solr/index/schema/fields/document_id',
         status_code=200
     )
+    requests_mock.get(
+        'http://localhost:8983/solr/index/schema/dynamicfields/*_orig_',
+        status_code=200
+    )
 
     actual = schema_manager.apply_dict_dump()
 
@@ -259,6 +263,11 @@ def test_schema_management_apply_dict_dump_5(schema_manager, requests_mock):
     requests_mock.get(
         'http://localhost:8983/solr/index/schema/fields/page_count',
         status_code=404  # field does NOT exist in solr schema
+    )
+    # schema always checks agains dynamic field *_orig_
+    requests_mock.get(
+        'http://localhost:8983/solr/index/schema/dynamicfields/*_orig_',
+        status_code=200
     )
 
     actual = schema_manager.apply_dict_dump()

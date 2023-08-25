@@ -27,17 +27,23 @@ class SchemaManager:
         add_field = [
             m.model_dump() for _, m in self._normal_fields()
         ]
+        add_dynamic_field = [
+            m.model_dump() for _, m in self._dynamic_fields()
+        ]
 
         return {
             'add-field': add_field,
-            'add-copy-field': add_copy_field
+            'add-copy-field': add_copy_field,
+            'add-dynamic-field': add_dynamic_field
         }
 
     def apply_dict_dump(self):
         ret = {
             'add-field': [],
             'replace-field': [],
-            'add-copy-field': []
+            'add-copy-field': [],
+            'replace-dynamic-field': [],
+            'add-dynamic-field': [],
         }
         for name, m in self._copy_fields():
             ret['add-copy-field'].append(m.model_dump())
@@ -48,6 +54,12 @@ class SchemaManager:
             else:
                 ret['add-field'].append(m.model_dump())
 
+        for name, m in self._dynamic_fields():
+            if self.client.dynamicfield_exists(name):
+                ret['replace-dynamic-field'].append(m.model_dump())
+            else:
+                ret['add-dynamic-field'].append(m.model_dump())
+
         return ret
 
     def delete_dict_dump(self):
@@ -57,10 +69,14 @@ class SchemaManager:
         normal_fields = [
              {'name': m.name} for _, m in self._normal_fields()
         ]
+        dynamic_fields = [
+             {'name': m.name} for _, m in self._dynamic_fields()
+        ]
 
         return {
             'delete-field': normal_fields,
-            'delete-copy-field': copy_fields
+            'delete-copy-field': copy_fields,
+            'delete-dynamic-field': dynamic_fields
         }
 
     def _copy_fields(self) -> List[Tuple[str, CopyFieldDump]]:
@@ -98,3 +114,12 @@ class SchemaManager:
                 indexed=field_instance.index,
                 stored=field_instance.store
             )
+
+    def _dynamic_fields(self) -> List[Tuple[str, FieldDump]]:
+        yield "*_orig_", FieldDump(
+            name="*_orig_",
+            type="text_general",
+            multiValued=False,
+            indexed=False,
+            stored=True
+        )

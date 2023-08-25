@@ -1,7 +1,6 @@
 import xapian
 
 from salinic.url import URL
-from salinic.utils import get_db_path
 
 RO = 'ro'
 RW = 'rw'
@@ -34,8 +33,8 @@ class ClientRW:
 
 class ClientRO:
 
-    def __init__(self, dsn: str):
-        self._db_path = get_db_path(dsn)
+    def __init__(self, url: URL):
+        self._db_path = url.index
         self._db = xapian.Database(self._db_path)
 
     def replace_document(self, idterm: str, doc: xapian.Document):
