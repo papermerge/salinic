@@ -28,7 +28,7 @@ class SchemaManager:
             m.model_dump() for _, m in self._normal_fields()
         ]
         add_dynamic_field = [
-            m.model_dump() for _, m in self._dynamicnormal_fields()
+            m.model_dump() for _, m in self._dynamic_fields()
         ]
 
         return {
