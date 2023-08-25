@@ -3,7 +3,7 @@ import json
 import xapian
 from pydantic import BaseModel
 
-from salinic.field import Field, IdField, KeywordField, TextField
+from salinic.field import Field, IdField, KeywordField, TextField, UUIDField
 from salinic.query import SearchQuery
 from salinic.utils import first
 
@@ -98,11 +98,14 @@ class IndexRW:
                     insert_value,
                     prefix
                 )
-            elif isinstance(field_instance, IdField):
+            elif isinstance(field_instance, (IdField, UUIDField)):
                 if isinstance(insert_value, str):
                     index_id_field(self._termgenerator, insert_value, prefix)
 
-            id_field = first(field.metadata, lambda x: type(x) is IdField)
+            id_field = first(
+                field.metadata,
+                lambda x: type(x) is IdField or type(x) is UUIDField
+            )
 
             if id_field and id_field.primary_key:
                 primary_key_name = name

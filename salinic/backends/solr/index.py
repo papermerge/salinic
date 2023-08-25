@@ -25,7 +25,20 @@ class Base:
             for some_doc in docs_list
         ]
 
-        return [sq.entity(**doc) for doc in docs]
+        result = []
+        for doc in docs:
+            attrs = {}
+            for field_name, value in doc.items():
+                if '_orig_' in field_name:
+                    continue
+                if self.schema.needs_transform(self.schema, field_name):
+                    attrs[field_name] = json.loads(doc[f'{field_name}_orig_'])
+                else:
+                    attrs[field_name] = value
+
+            result.append(sq.entity(**attrs))
+
+        return result
 
 
 class IndexRW(Base):
