@@ -27,7 +27,7 @@ class SchemaManager:
 
 
 def get_schema_manager_backend(engine, model):
-    ClientKlass = get_ro_client_backend_class(engine)
+    ClientKlass = get_rw_client_backend_class(engine)
     client = ClientKlass(engine.url)
     SchemaManagerKlass = get_schema_manager_backend_class(engine)
 
@@ -41,8 +41,8 @@ def get_schema_manager_backend_class(engine):
     return module.SchemaManager
 
 
-def get_ro_client_backend_class(engine):
+def get_rw_client_backend_class(engine):
     module_full_path = f'salinic.backends.{engine.url.scheme}.client'
     module = importlib.import_module(module_full_path)
 
-    return module.ClientRO
+    return module.ClientRW
