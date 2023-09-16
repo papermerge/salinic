@@ -70,7 +70,7 @@ def test_remove_document_from_index(index: IndexRW):
     assert len(results) == 1
 
     # remove document from the index
-    index.remove("IDone")
+    index.remove(id="one")
 
     # perform same query as in (1)
     sq2 = Search(SimpleModel).query('document')
