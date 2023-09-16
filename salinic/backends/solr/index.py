@@ -64,10 +64,7 @@ class IndexRW(Base):
 
         self.client.add(model_dict)
 
-    def remove(self, doc_id: str):
-        kwargs = {
-            'id': doc_id
-        }
+    def remove(self, **kwargs):
         logger.debug("Remove document with kwargs={kwargs}")
         self.client.remove(**kwargs)
 

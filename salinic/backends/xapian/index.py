@@ -126,13 +126,14 @@ class IndexRW:
 
         self.client.replace_document(idterm, doc)
 
-    def remove(self, doc_id: str):
-        logger.debug(f"Removing doc_id={doc_id}")
+    def remove(self, **kwargs):
+        logger.debug(f"Removing kwargs={kwargs}")
 
-        id_term = f"ID{doc_id.replace('-', '')}"
-        logger.debug(f"id_term={id_term}")
+        for key, value in kwargs.items():
+            id_term = f"{key.upper()}{value.replace('-', '')}"
+            logger.debug(f"id_term={id_term}")
 
-        self.client.delete_document(id_term)
+            self.client.delete_document(id_term)
 
     def search(self, sq: SearchQuery):
         results = []

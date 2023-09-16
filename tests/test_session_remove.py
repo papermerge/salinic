@@ -31,7 +31,7 @@ def test_remove_entity_by_primary_field(index: IndexRW):
     assert len(results_1) == 1
 
     # document is removed from index by ID
-    index.remove("IDone")
+    index.remove(id="one")
 
     sq_2 = Search(SimpleModel).query(
         'some text'
@@ -62,7 +62,7 @@ def test_remove_entity_by_user_id_field(index: IndexRW):
     assert len(results_1) == 1
 
     # document is removed from the index by USER_ID
-    index.remove("USER_IDuser_1")
+    index.remove(user_id="user_1")
 
     sq_2 = Search(SimpleModel).query(
         'some text'

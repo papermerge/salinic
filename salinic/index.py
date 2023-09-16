@@ -27,8 +27,8 @@ class IndexRW(IndexBase):
     def add(self, entity):
         self.backend.add(entity)
 
-    def remove(self, docid: str):
-        self.backend.remove(docid)
+    def remove(self, **kwargs):
+        self.backend.remove(**kwargs)
 
 
 def get_ro_client_backend_class(engine):
