@@ -1,4 +1,5 @@
 import json
+import logging
 
 import xapian
 from pydantic import BaseModel
@@ -6,6 +7,8 @@ from pydantic import BaseModel
 from salinic.field import Field, IdField, KeywordField, TextField, UUIDField
 from salinic.query import SearchQuery
 from salinic.utils import first
+
+logger = logging.getLogger(__name__)
 
 
 class IndexRO:
@@ -123,8 +126,13 @@ class IndexRW:
 
         self.client.replace_document(idterm, doc)
 
-    def remove(self, docid: str):
-        self.client.delete_document(docid)
+    def remove(self, doc_id: str):
+        logger.debug(f"Removing doc_id={doc_id}")
+
+        id_term = f"ID{doc_id.replace('-', '')}"
+        logger.debug(f"id_term={id_term}")
+
+        self.client.delete_document(id_term)
 
     def search(self, sq: SearchQuery):
         results = []

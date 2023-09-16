@@ -1,10 +1,13 @@
 import json
+import logging
 
 from pydantic import BaseModel
 
 from salinic.field import Field
 from salinic.query import SearchQuery
 from salinic.utils import filter_keys, first, trim_suffixes
+
+logger = logging.getLogger(__name__)
 
 
 class Base:
@@ -61,7 +64,11 @@ class IndexRW(Base):
 
         self.client.add(model_dict)
 
-    def remove(self, kwargs):
+    def remove(self, doc_id: str):
+        kwargs = {
+            'id': doc_id
+        }
+        logger.debug("Remove document with kwargs={kwargs}")
         self.client.remove(**kwargs)
 
 

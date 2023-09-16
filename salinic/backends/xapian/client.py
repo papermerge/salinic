@@ -1,9 +1,14 @@
+import logging
+
 import xapian
 
 from salinic.url import URL
 
 RO = 'ro'
 RW = 'rw'
+
+
+logger = logging.getLogger(__name__)
 
 
 class ClientRW:
@@ -20,6 +25,7 @@ class ClientRW:
         self.commit()
 
     def delete_document(self, docid: str):
+        logger.debug("delete_document docid={docid}")
         self.db.delete_document(docid)
         self.commit()
 
