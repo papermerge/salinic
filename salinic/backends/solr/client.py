@@ -1,6 +1,7 @@
 import logging
 
 import requests
+from requests.exceptions import HTTPError
 
 from salinic.query import SearchQuery
 from salinic.url import URL
@@ -71,24 +72,52 @@ class ClientRW(Base):
         return response
 
     def update_schema(self, data):
-        return requests.post(
+        logger.debug(
+            f'POST {self.http_update_url} json={data}'
+        )
+        response = requests.post(
             self.http_schema_url,
             json=data
         )
+        response.raise_for_status()
 
     def field_exists(self, name: str) -> bool:
         # for normal fields
-        response = requests.get(self.http_field_url(name))
+        url = self.http_field_url(name)
+        logger.debug(f'GET {url}')
+        response = requests.get(url)
 
-        if response.status_code == 404:
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            if response.status_code == 404:
+                # status 404 indicates that field does not exist, this
+                # is normal flow
+                logger.debug(f"Field {name} does not exist")
+                return False
+            # we got some other error messages (i.e. != 404)
+            # log it
+            logger.exception()
             return False
 
         return True
 
     def dynamicfield_exists(self, name: str) -> bool:
-        response = requests.get(self.http_dynamicfield_url(name))
+        url = self.http_dynamicfield_url(name)
+        logger.debug(f'GET {url}')
+        response = requests.get(url)
 
-        if response.status_code == 404:
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            if response.status_code == 404:
+                # status 404 indicates that field does not exist, this
+                # is normal flow
+                logger.debug(f"Dynamic field {name} does not exist")
+                return False
+            # we got some other error messages (i.e. != 404)
+            # log it
+            logger.exception()
             return False
 
         return True

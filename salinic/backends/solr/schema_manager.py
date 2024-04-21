@@ -1,9 +1,12 @@
+import logging
 from typing import List, Tuple
 
 from salinic.field import Field, NumericField
 from salinic.utils import first
 
 from .types import CopyFieldDump, FieldDump, FieldType
+
+logger = logging.getLogger(__name__)
 
 
 class SchemaManager:
@@ -15,7 +18,9 @@ class SchemaManager:
         self.client.update_schema(self.create_dict_dump())
 
     def apply(self):
-        self.client.update_schema(self.apply_dict_dump())
+        dict_dump = self.apply_dict_dump()
+        logger.debug(f"Apply schema changes, dict_dump: {dict_dump}")
+        self.client.update_schema(dict_dump)
 
     def delete(self):
         self.client.update_schema(self.delete_dict_dump())
