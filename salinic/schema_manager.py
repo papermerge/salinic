@@ -35,14 +35,15 @@ def get_schema_manager_backend(engine, model):
 
 
 def get_schema_manager_backend_class(engine):
-    module_full_path = f'salinic.backends.{engine.url.scheme}.schema_manager'
+    full_path = f'salinic.backends.{engine.url.scheme.value}.schema_manager'
+    module_full_path = full_path
     module = importlib.import_module(module_full_path)
 
     return module.SchemaManager
 
 
 def get_rw_client_backend_class(engine):
-    module_full_path = f'salinic.backends.{engine.url.scheme}.client'
+    module_full_path = f'salinic.backends.{engine.url.scheme.value}.client'
     module = importlib.import_module(module_full_path)
 
     return module.ClientRW

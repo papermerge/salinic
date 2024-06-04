@@ -8,8 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.11, <4.0"
 pydantic = "^2.7"
-xapianpy = {version = "^1.4.22.post2305071405", optional = true}
 requests = "^2.31.0"
+xapianpy = {version = "1.4.22.post2406040406", optional = true}
 
 [tool.poetry.extras]
 xapian = ["xapianpy"]
