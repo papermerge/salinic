@@ -32,28 +32,28 @@ class IndexRW(IndexBase):
 
 
 def get_ro_client_backend_class(engine):
-    module_full_path = f'salinic.backends.{engine.url.scheme}.client'
+    module_full_path = f'salinic.backends.{engine.url.scheme.value}.client'
     module = importlib.import_module(module_full_path)
 
     return module.ClientRO
 
 
 def get_rw_client_backend_class(engine):
-    module_full_path = f'salinic.backends.{engine.url.scheme}.client'
+    module_full_path = f'salinic.backends.{engine.url.scheme.value}.client'
     module = importlib.import_module(module_full_path)
 
     return module.ClientRW
 
 
 def get_ro_index_backend_class(engine):
-    module_full_path = f'salinic.backends.{engine.url.scheme}.index'
+    module_full_path = f'salinic.backends.{engine.url.scheme.value}.index'
     module = importlib.import_module(module_full_path)
 
     return module.IndexRO
 
 
 def get_rw_index_backend_class(engine):
-    module_full_path = f'salinic.backends.{engine.url.scheme}.index'
+    module_full_path = f'salinic.backends.{engine.url.scheme.value}.index'
     module = importlib.import_module(module_full_path)
 
     return module.IndexRW

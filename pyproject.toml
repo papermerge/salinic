@@ -1,16 +1,18 @@
 [tool.poetry]
 name = "salinic"
-version = "0.3.10"
+version = "0.4.0"
 description = "Search abstraction layer"
 authors = ["Eugen Ciur <eugen@papermerge.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8, <4.0"
-pydantic = "^2.1.1"
-xapianpy = "^1.4.22.post2305071405"
+python = ">=3.11, <4.0"
+pydantic = "^2.7"
 requests = "^2.31.0"
+xapianpy = {version = "1.4.22.post2406040406", optional = true}
 
+[tool.poetry.extras]
+xapian = ["xapianpy"]
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.0"
