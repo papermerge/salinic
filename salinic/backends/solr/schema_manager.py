@@ -1,7 +1,7 @@
 import logging
 from typing import List, Tuple
 
-from salinic.field import Field, NumericField
+from salinic.field import Field, NumericField, StringField
 from salinic.utils import first
 
 from .types import CopyFieldDump, FieldDump, FieldType
@@ -109,6 +109,10 @@ class SchemaManager:
 
             if isinstance(field_instance, NumericField):
                 _type = FieldType.pint
+            elif isinstance(field_instance, StringField):
+                _type = FieldType.string
+            elif field_instance.group:
+                _type = FieldType.text_gen_sort
             else:
                 _type = FieldType.text_general
 

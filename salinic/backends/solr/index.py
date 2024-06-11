@@ -16,6 +16,9 @@ class Base:
         self.schema = schema
 
     def search(self, sq: SearchQuery):
+        """
+
+        """
         result = self.client.search(sq)
         if result['response']['numFound'] == 0:
             return []
