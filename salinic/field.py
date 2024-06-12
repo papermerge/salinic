@@ -9,6 +9,8 @@ class Field(NamedTuple):
     default: any = None
     multi_value: bool = False
     multi_lang: bool = False
+    # enables grouping by this field
+    group: bool = False
 
 
 class KeywordField(Field):
@@ -20,6 +22,10 @@ class TextField(Field):
 
 
 class NumericField(Field):
+    pass
+
+
+class StringField(Field):
     pass
 
 

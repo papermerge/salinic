@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, model_serializer
 
 from .field import Field, IdField
@@ -81,3 +83,31 @@ class Schema(BaseModel):
 
     def needs_transform(self, field_name):
         return hasattr(self, f'get_idx_value__{field_name}')
+
+
+class Page(BaseModel):
+    id: UUID
+    page_number: int
+    text: str | None = None
+
+
+class Document(BaseModel):
+    id: UUID
+    title: str
+    lang: str
+    tags: list[str] = []
+    pages: list[Page]
+    entity_type: str = 'document'
+
+    def __hash__(self):
+        return hash(self.model_dump_json())
+
+
+class Folder(BaseModel):
+    id: UUID
+    title: str
+    tags: list[str] = []
+    entity_type: str = 'folder'
+
+    def __hash__(self):
+        return hash(self.model_dump_json())

@@ -135,7 +135,7 @@ class IndexRW:
 
             self.client.delete_document(id_term)
 
-    def search(self, sq: SearchQuery):
+    def search(self, sq: SearchQuery, user_id: str | None = None):
         results = []
 
         if str(sq.query.free_text):

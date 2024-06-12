@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "salinic"
-version = "0.4.0"
+version = "0.5.0"
 description = "Search abstraction layer"
 authors = ["Eugen Ciur <eugen@papermerge.com>"]
 readme = "README.md"
@@ -10,6 +10,7 @@ python = ">=3.11, <4.0"
 pydantic = "^2.7"
 requests = "^2.31.0"
 xapianpy = {version = "1.4.22.post2406040406", optional = true}
+glom = "^23.5.0"
 
 [tool.poetry.extras]
 xapian = ["xapianpy"]

@@ -169,10 +169,26 @@ class Query:
 
 class SearchQuery:
     query: Query
+    rows: int
+    start: int
+    group_limit: int
+    group_offset: int
 
-    def __init__(self, entity, query: str):
+    def __init__(
+        self,
+        entity,
+        q: str,
+        rows: int = 100,
+        start: int = 0,
+        group_limit: int = 100,
+        group_offset: int = 0
+    ):
         self.entity = entity
-        self.query = Query(query)
+        self.query = Query(q)
+        self.rows = rows
+        self.start = start
+        self.group_limit = group_limit
+        self.group_offset = group_offset
 
     def __str__(self):
         return f"SearchQuery(query={self.query}, entity={self.entity})"

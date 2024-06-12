@@ -11,6 +11,8 @@ def to_dash(string: str) -> str:
 
 class FieldType(str, Enum):
     text_general = 'text_general'
+    text_gen_sort = 'text_gen_sort'
+    string = 'string'
     pint = 'pint'
 
 
