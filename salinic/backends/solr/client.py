@@ -16,17 +16,30 @@ class Base:
 
 class ClientRW(Base):
 
-    def search(self, sq: SearchQuery):
+    def search(self, sq: SearchQuery, user_id: str | None = None):
         payload = {
-            'q': sq.query.original_query
+            'q': sq.query.original_query,
+            'group': 'true',
+            'group.field': 'document_id',
+            'rows': sq.rows,
+            'start': sq.start,
+            'group.limit': sq.group_limit,
+            'group.offset': sq.group_offset,
+            'group.sort': 'page_number asc'
         }
+
+        if user_id:
+            payload['q'] = f"{payload['q']} AND user_id:{user_id}"
 
         response = requests.get(
             self.http_select_url,
             params=payload
         )
+        logger.debug(payload)
 
-        return response.json()
+        result = response.json()
+
+        return result
 
     def add(self, some_dict):
         # change data specific for add

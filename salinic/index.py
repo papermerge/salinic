@@ -8,8 +8,8 @@ class IndexBase:
         self.engine = engine
         self.schema = schema
 
-    def search(self, sq: SearchQuery):
-        return self.backend.search(sq)
+    def search(self, sq: SearchQuery, user_id: str | None = None):
+        return self.backend.search(sq, user_id)
 
 
 class IndexRO(IndexBase):
