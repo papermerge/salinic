@@ -1,6 +1,7 @@
 import json
 import logging
 
+from glom import glom
 from pydantic import BaseModel
 
 from salinic.field import Field
@@ -23,8 +24,9 @@ class Base:
     ) -> list[DocumentPage | Folder]:
         """Query index"""
         result = self.client.search(sq, user_id)
-        items = result['docs']
+        items = glom(result, 'response.docs')
         returned_list = []
+
         for item in items:
             if document_id := item.get('document_id', None):
                 lang = item.get('lang', 'en')
