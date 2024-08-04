@@ -12,36 +12,6 @@ files = [
 ]
 
 [[package]]
-name = "attrs"
-version = "23.2.0"
-description = "Classes Without Boilerplate"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "attrs-23.2.0-py3-none-any.whl", hash = "sha256:99b87a485a5820b23b879f04c2305b44b951b502fd64be915879d77a7e8fc6f1"},
-    {file = "attrs-23.2.0.tar.gz", hash = "sha256:935dc3b529c262f6cf76e50877d35a4bd3c1de194fd41f47a2b7ae8f19971f30"},
-]
-
-[package.extras]
-cov = ["attrs[tests]", "coverage[toml] (>=5.3)"]
-dev = ["attrs[tests]", "pre-commit"]
-docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope-interface"]
-tests = ["attrs[tests-no-zope]", "zope-interface"]
-tests-mypy = ["mypy (>=1.6)", "pytest-mypy-plugins"]
-tests-no-zope = ["attrs[tests-mypy]", "cloudpickle", "hypothesis", "pympler", "pytest (>=4.3.0)", "pytest-xdist[psutil]"]
-
-[[package]]
-name = "boltons"
-version = "24.0.0"
-description = "When they're not builtins, they're boltons."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "boltons-24.0.0-py3-none-any.whl", hash = "sha256:9618695a6ec4f50412e7072e5d78910a00b4111d0b9b549e4a3d60bc321e7807"},
-    {file = "boltons-24.0.0.tar.gz", hash = "sha256:7153feccaea1ff2e1472f68d4b57fadb796a2ee49d29f638f1c9cd8fb5ebd916"},
-]
-
-[[package]]
 name = "certifi"
 version = "2024.6.2"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -185,21 +155,6 @@ files = [
 ]
 
 [[package]]
-name = "face"
-version = "20.1.1"
-description = "A command-line application framework (and CLI parser). Friendly for users, full-featured for developers."
-optional = false
-python-versions = "*"
-files = [
-    {file = "face-20.1.1-py2-none-any.whl", hash = "sha256:3790311a7329e4b0d90baee346eecad54b337629576edf3a246683a5f0d24446"},
-    {file = "face-20.1.1-py3-none-any.whl", hash = "sha256:ca3a1d8b8b6aa8e61d62a300e9ee24e09c062aceda549e9a640128e4fa0f4559"},
-    {file = "face-20.1.1.tar.gz", hash = "sha256:7d59ca5ba341316e58cf72c6aff85cca2541cf5056c4af45cb63af9a814bed3e"},
-]
-
-[package.dependencies]
-boltons = ">=20.0.0"
-
-[[package]]
 name = "filelock"
 version = "3.14.0"
 description = "A platform independent file lock."
@@ -233,26 +188,6 @@ pbr = ">=5.7.0"
 docs = ["docutils"]
 streams = ["testtools"]
 test = ["mock", "testtools"]
-
-[[package]]
-name = "glom"
-version = "23.5.0"
-description = "A declarative object transformer and formatter, for conglomerating nested data."
-optional = false
-python-versions = "*"
-files = [
-    {file = "glom-23.5.0-py3-none-any.whl", hash = "sha256:fe4e9be4dc93c11a99f8277042e4bee95419c02cda4b969f504508b0a1aa6a66"},
-    {file = "glom-23.5.0.tar.gz", hash = "sha256:06af5e3486aacc59382ba34e53ebeabd7a9345d78f7dbcbee26f03baa4b83bac"},
-]
-
-[package.dependencies]
-attrs = "*"
-boltons = ">=19.3.0"
-face = "20.1.1"
-
-[package.extras]
-toml = ["tomli"]
-yaml = ["PyYAML"]
 
 [[package]]
 name = "identify"
@@ -665,4 +600,4 @@ xapian = ["xapianpy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11, <4.0"
-content-hash = "b807928d2271312a12821b361ce52b50d97aa67922edbf402b636a2c3f4e96aa"
+content-hash = "47643f91e34e63be7ee7ca93d2dae9b3622b6c12579600245f2b84b58872556a"
