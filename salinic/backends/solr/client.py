@@ -19,8 +19,8 @@ class ClientRW(Base):
     def search(self, sq: SearchQuery, user_id: str | None = None):
         payload = {
             'q': sq.query.original_query,
-            'rows': sq.rows,
-            'start': sq.start,
+            'rows': sq.page_size,
+            'start': sq.page_size * (sq.page_number - 1),
         }
 
         if user_id:

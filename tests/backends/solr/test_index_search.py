@@ -1,7 +1,7 @@
 from typing_extensions import Annotated
 
 from salinic import IdField, IndexRO, Search, TextField, create_engine
-from salinic.schema import DocumentPage, Folder, Schema
+from salinic.schema import DocumentPage, Folder, PaginatedResponse, Schema
 
 
 class Index(Schema):
@@ -48,7 +48,7 @@ def test_index_search_result_with_two_folders(requests_mock):
         'http://localhost:8983/solr/index/select?q=my+document',
         json=json_response
     )
-    results = index.search(sq)
+    results: PaginatedResponse = index.search(sq)
 
     expected = {
         Folder(
@@ -63,7 +63,7 @@ def test_index_search_result_with_two_folders(requests_mock):
         )
     }
 
-    assert set(results) == expected
+    assert set(results.items) == expected
 
 
 def test_index_search_result_with_folders_and_documents(requests_mock):
@@ -120,7 +120,7 @@ def test_index_search_result_with_folders_and_documents(requests_mock):
         'http://localhost:8983/solr/index/select?q=my+document',
         json=json_response
     )
-    results = index.search(sq)
+    results: PaginatedResponse = index.search(sq)
 
     expected = {
         Folder(
@@ -150,5 +150,5 @@ def test_index_search_result_with_folders_and_documents(requests_mock):
             tags=[]
         )
     }
-    assert len(results) == len(expected)
-    assert set(results) == expected
+    assert len(results.items) == len(expected)
+    assert set(results.items) == expected

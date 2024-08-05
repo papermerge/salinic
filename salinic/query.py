@@ -169,26 +169,20 @@ class Query:
 
 class SearchQuery:
     query: Query
-    rows: int
-    start: int
-    group_limit: int
-    group_offset: int
+    page_number: int  # starts with 1
+    page_size: int
 
     def __init__(
         self,
         entity,
         q: str,
-        rows: int = 100,
-        start: int = 0,
-        group_limit: int = 100,
-        group_offset: int = 0
+        page_size: int = 50,
+        page_number: int = 1
     ):
         self.entity = entity
         self.query = Query(q)
-        self.rows = rows
-        self.start = start
-        self.group_limit = group_limit
-        self.group_offset = group_offset
+        self.page_size = page_size
+        self.page_number = page_number
 
     def __str__(self):
         return f"SearchQuery(query={self.query}, entity={self.entity})"

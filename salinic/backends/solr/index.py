@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from salinic.field import Field
 from salinic.query import SearchQuery
-from salinic.schema import DocumentPage, Folder
+from salinic.schema import DocumentPage, Folder, PaginatedResponse
 from salinic.utils import first
 
 logger = logging.getLogger(__name__)
@@ -21,10 +21,14 @@ class Base:
         self,
         sq: SearchQuery,
         user_id: str | None = None
-    ) -> list[DocumentPage | Folder]:
+    ) -> PaginatedResponse:
         """Query index"""
         result = self.client.search(sq, user_id)
         items = glom(result, 'response.docs')
+        total_found = glom(result, 'response.numFound')
+        start = glom(result, 'response.start')
+        page_number = int(start / sq.page_size) + 1
+        num_pages = int(total_found / sq.page_size) + 1
         returned_list = []
 
         for item in items:
@@ -52,7 +56,12 @@ class Base:
                 )
                 returned_list.append(folder)
 
-        return returned_list
+        return PaginatedResponse(
+            page_size=sq.page_size,
+            page_number=page_number,
+            num_pages=num_pages,
+            items=returned_list
+        )
 
 
 class IndexRW(Base):
