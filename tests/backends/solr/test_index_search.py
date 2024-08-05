@@ -1,7 +1,7 @@
 from typing_extensions import Annotated
 
 from salinic import IdField, IndexRO, Search, TextField, create_engine
-from salinic.schema import Document, Folder, Page, Schema
+from salinic.schema import DocumentPage, Folder, PaginatedResponse, Schema
 
 
 class Index(Schema):
@@ -20,37 +20,27 @@ def test_index_search_result_with_two_folders(requests_mock):
     sq = Search(Index).query('my document')
 
     json_response = {
-        "numFound": 1,
-        "start": 0,
-        "numFoundExact": True,
-        "grouped": {
-            "document_id": {
-                "matches": 2,
-                "groups": [
-                    {
-                        "groupValue": None,
-                        "doclist": {
-                            "numFound": 2,
-                            "docs": [
-                                {
-                                    "id": "0b663599-32b1-4396-8dbe-ae7cd327cec6",  # noqa
-                                    "lang": "en",
-                                    "title_txt_en": "My Documents",
-                                    "entity_type": "folder",
-                                    "_version_": 1774301885457498112
-                                },
-                                {
-                                    "id": "1c773599-32b1-4396-8dbe-ae7cd327cec6",  # noqa
-                                    "lang": "en",
-                                    "title_txt_en": ".inbox",
-                                    "entity_type": "folder",
-                                    "_version_": 1774301885457498112
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
+        "response": {
+            "numFound": 1,
+            "start": 0,
+            "numFoundExact": True,
+
+            "docs": [
+                {
+                    "id": "0b663599-32b1-4396-8dbe-ae7cd327cec6",  # noqa
+                    "lang": "en",
+                    "title_txt_en": "My Documents",
+                    "entity_type": "folder",
+                    "_version_": 1774301885457498112
+                },
+                {
+                    "id": "1c773599-32b1-4396-8dbe-ae7cd327cec6",  # noqa
+                    "lang": "en",
+                    "title_txt_en": ".inbox",
+                    "entity_type": "folder",
+                    "_version_": 1774301885457498112
+                }
+            ]
         }
     }
 
@@ -58,20 +48,22 @@ def test_index_search_result_with_two_folders(requests_mock):
         'http://localhost:8983/solr/index/select?q=my+document',
         json=json_response
     )
-    results = index.search(sq)
+    results: PaginatedResponse = index.search(sq)
 
     expected = {
         Folder(
             id='0b663599-32b1-4396-8dbe-ae7cd327cec6',
             title='My Documents',
+            lang='en'
         ),
         Folder(
             id='1c773599-32b1-4396-8dbe-ae7cd327cec6',
             title='.inbox',
+            lang='en'
         )
     }
 
-    assert set(results) == expected
+    assert set(results.items) == expected
 
 
 def test_index_search_result_with_folders_and_documents(requests_mock):
@@ -81,65 +73,46 @@ def test_index_search_result_with_folders_and_documents(requests_mock):
     sq = Search(Index).query('my document')
 
     json_response = {
-        "numFound": 1,
-        "start": 0,
-        "numFoundExact": True,
-        "grouped": {
-            "document_id": {
-                "matches": 2,
-                "groups": [
-                    {
-                        "groupValue": None,
-                        "doclist": {
-                            "numFound": 2,
-                            "docs": [
-                                {
-                                    "id": "0b663599-32b1-4396-8dbe-ae7cd327cec6",  # noqa
-                                    "lang": "en",
-                                    "title_txt_en": "My Documents",
-                                    "entity_type": "folder",
-                                    "_version_": 1774301885457498112
-                                },
-                                {
-                                    "id": "1c773599-32b1-4396-8dbe-ae7cd327cec6",  # noqa
-                                    "lang": "en",
-                                    "title_txt_en": ".inbox",
-                                    "entity_type": "folder",
-                                    "_version_": 1774301885457498112
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "groupValue": "9bc57688-302e-4e1f-840a-c747dcccb362",
-                        "doclist": {
-                            "numFound": 2,
-                            "docs": [
-                                {
-                                    "id": "a6e4916f-dea6-414b-aa38-f5b9ea375725",  # noqa
-                                    "document_id": "9bc57688-302e-4e1f-840a-c747dcccb362",   # noqa
-                                    "lang": "en",
-                                    "user_id": "4cee7c39-7c34-4cc5-8543-42a8c88c9fe6",  # noqa
-                                    "page_number": 1,
-                                    "entity_type": "page",
-                                    "title_txt_en": "brother_004603.pdf",
-                                    "_version_": 1801539996374532096
-                                },
-                                {
-                                    "id": "72f6ca9e-af4b-4235-a56c-a62508e24efe",  # noqa
-                                    "document_id": "9bc57688-302e-4e1f-840a-c747dcccb362",  # noqa
-                                    "lang": "en",
-                                    "user_id": "4cee7c39-7c34-4cc5-8543-42a8c88c9fe6",  # noqa
-                                    "page_number": 2,
-                                    "entity_type": "page",
-                                    "title_txt_en": "brother_004603.pdf",
-                                    "_version_": 1801539996403892224
-                                }
-                            ]
-                        }
-                    },
-                ]
-            }
+        "response": {
+            "numFound": 1,
+            "start": 0,
+            "numFoundExact": True,
+            "docs": [
+                {
+                    "id": "0b663599-32b1-4396-8dbe-ae7cd327cec6",
+                    "lang": "en",
+                    "title_txt_en": "My Documents",
+                    "entity_type": "folder",
+                    "_version_": 1774301885457498112
+                },
+                {
+                    "id": "1c773599-32b1-4396-8dbe-ae7cd327cec6",
+                    "lang": "en",
+                    "title_txt_en": ".inbox",
+                    "entity_type": "folder",
+                    "_version_": 1774301885457498112
+                },
+                {
+                    "id": "a6e4916f-dea6-414b-aa38-f5b9ea375725",
+                    "document_id": "9bc57688-302e-4e1f-840a-c747dcccb362",
+                    "lang": "en",
+                    "user_id": "4cee7c39-7c34-4cc5-8543-42a8c88c9fe6",
+                    "page_number": 1,
+                    "entity_type": "page",
+                    "title_txt_en": "brother_004603.pdf",
+                    "_version_": 1801539996374532096
+                },
+                {
+                    "id": "72f6ca9e-af4b-4235-a56c-a62508e24efe",  # noqa
+                    "document_id": "9bc57688-302e-4e1f-840a-c747dcccb362",  # noqa
+                    "lang": "en",
+                    "user_id": "4cee7c39-7c34-4cc5-8543-42a8c88c9fe6",  # noqa
+                    "page_number": 2,
+                    "entity_type": "page",
+                    "title_txt_en": "brother_004603.pdf",
+                    "_version_": 1801539996403892224
+                }
+            ]
         }
     }
 
@@ -147,33 +120,35 @@ def test_index_search_result_with_folders_and_documents(requests_mock):
         'http://localhost:8983/solr/index/select?q=my+document',
         json=json_response
     )
-    results = index.search(sq)
+    results: PaginatedResponse = index.search(sq)
 
     expected = {
         Folder(
             id='0b663599-32b1-4396-8dbe-ae7cd327cec6',
+            lang='en',
             title='My Documents',
         ),
         Folder(
             id='1c773599-32b1-4396-8dbe-ae7cd327cec6',
+            lang='en',
             title='.inbox',
         ),
-        Document(
-            id='9bc57688-302e-4e1f-840a-c747dcccb362',
+        DocumentPage(
+            id='a6e4916f-dea6-414b-aa38-f5b9ea375725',
+            lang='en',
+            document_id='9bc57688-302e-4e1f-840a-c747dcccb362',
+            page_number=1,
+            title='brother_004603.pdf',
+            tags=[]
+        ),
+        DocumentPage(
+            id='72f6ca9e-af4b-4235-a56c-a62508e24efe',
             lang='en',
             title='brother_004603.pdf',
-            tags=[],
-            pages=[
-                Page(
-                    id="a6e4916f-dea6-414b-aa38-f5b9ea375725",
-                    page_number=1
-                ),
-                Page(
-                    id="72f6ca9e-af4b-4235-a56c-a62508e24efe",
-                    page_number=2
-                )
-            ]
+            document_id='9bc57688-302e-4e1f-840a-c747dcccb362',
+            page_number=2,
+            tags=[]
         )
     }
-
-    assert set(results) == expected
+    assert len(results.items) == len(expected)
+    assert set(results.items) == expected

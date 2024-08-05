@@ -19,13 +19,8 @@ class ClientRW(Base):
     def search(self, sq: SearchQuery, user_id: str | None = None):
         payload = {
             'q': sq.query.original_query,
-            'group': 'true',
-            'group.field': 'document_id',
-            'rows': sq.rows,
-            'start': sq.start,
-            'group.limit': sq.group_limit,
-            'group.offset': sq.group_offset,
-            'group.sort': 'page_number asc'
+            'rows': sq.page_size,
+            'start': sq.page_size * (sq.page_number - 1),
         }
 
         if user_id:
